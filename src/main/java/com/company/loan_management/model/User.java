@@ -5,10 +5,12 @@ import lombok.*;
 
 @Entity
 @Table(name = "users")
-@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -21,6 +23,7 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     private String password;
@@ -28,6 +31,8 @@ public class User {
     private Double salary;
 
     private String bankAccountNumber;
+
+    private String department;
 
     @Column(unique = true)
     private String username;
