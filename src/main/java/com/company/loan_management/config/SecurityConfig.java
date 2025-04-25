@@ -62,7 +62,13 @@ public class SecurityConfig {
 
         // Allow certain endpoints to be accessed without authentication
         http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers("/api/auth/login", "/","/h2-console/**").permitAll() // Allow login/register
+                requests.requestMatchers("/api/auth/login", "/","/h2-console/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v2/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll() // Allow login/register
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow admin access to /admin/**
                         .anyRequest().authenticated() // Secure all other endpoints
         );

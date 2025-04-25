@@ -1,5 +1,6 @@
 package com.company.loan_management.service;
 
+import com.company.loan_management.model.Role;
 import com.company.loan_management.model.User;
 import com.company.loan_management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +104,7 @@ public class UserServiceImpl implements UserService {
                 existingUser.setBankAccountNumber(updatedUser.getBankAccountNumber());
                 existingUser.setDepartment(updatedUser.getDepartment());
                 existingUser.setRole(updatedUser.getRole());
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                 logger.info("User updated successfully with ID: {}", id);
                 return userRepository.save(existingUser);
             }).orElseGet(() -> {
@@ -171,7 +173,7 @@ public class UserServiceImpl implements UserService {
      * @param role The role to filter users by.
      * @return List of users with the specified role.
      */
-    public List<User> getUsersByRole(String role) {
+    public List<User> getUsersByRole(Role role) {
         try {
             logger.info("Finding users by role: {}", role);
             return userRepository.findByRole(role);

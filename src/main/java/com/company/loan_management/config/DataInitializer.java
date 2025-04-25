@@ -34,6 +34,7 @@ public class DataInitializer {
                     .bankAccountNumber("123456789")
                     .salary(100000.0)
                     .department("Administration")
+                    .isActive(true)
                     .build();
 
             userService.createUser(admin);

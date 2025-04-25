@@ -19,21 +19,26 @@ public class User {
 
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private Double salary;
 
+    @Column(nullable = false)
     private String bankAccountNumber;
 
     private String department;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
+
+    private boolean isActive = true;
 }

@@ -4,29 +4,60 @@ import com.company.loan_management.dto.UserDTO;
 import com.company.loan_management.model.User;
 import com.company.loan_management.model.Role;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserMapper {
 
-    // Mapping User to UserDTO
+    // Logger to log the mapping process
+    private static final Logger logger = LoggerFactory.getLogger(UserMapper.class);
+
+    /**
+     * Converts a User entity to a UserDTO.
+     *
+     * @param user The User entity to be converted.
+     * @return The corresponding UserDTO.
+     */
     public static UserDTO toDTO(@NotNull User user) {
-        return UserDTO.builder()
+        logger.info("Mapping User entity to UserDTO for user with ID: {}", user.getId());
+
+        UserDTO userDTO = UserDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .username(user.getUsername())
                 .email(user.getEmail())
-                .role(user.getRole().name()) // Convert Role enum to String
+                .role(user.getRole().name())
                 .salary(user.getSalary())
                 .bankAccountNumber(user.getBankAccountNumber())
+                .department(user.getDepartment())
                 .build();
+
+        logger.info("UserDTO created successfully for user with ID: {}", user.getId());
+        return userDTO;
     }
 
+    /**
+     * Converts a UserDTO to a User entity.
+     *
+     * @param userDTO The UserDTO to be converted.
+     * @return The corresponding User entity.
+     */
     public static User toEntity(@NotNull UserDTO userDTO) {
-        return User.builder()
+        logger.info("Mapping UserDTO to User entity for user with ID: {}", userDTO.getId());
+
+        User user = User.builder()
                 .id(userDTO.getId())
                 .name(userDTO.getName())
+                .username(userDTO.getUsername())
                 .email(userDTO.getEmail())
-                .role(Role.valueOf(userDTO.getRole())) // Convert String to Role enum
+                .role(Role.valueOf(userDTO.getRole()))
                 .salary(userDTO.getSalary())
                 .bankAccountNumber(userDTO.getBankAccountNumber())
+                .department(userDTO.getDepartment())
                 .build();
+
+        logger.info("User entity created successfully for user with ID: {}", userDTO.getId());
+        return user;
     }
 }
+

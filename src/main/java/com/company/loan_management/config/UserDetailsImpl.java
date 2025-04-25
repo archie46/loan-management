@@ -120,6 +120,6 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         logger.debug("Checking if account is enabled for user: {}", username);
-        return true;
+        return user.isActive();
     }
 }
