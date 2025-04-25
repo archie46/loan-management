@@ -64,7 +64,7 @@ public class UserController {
      * @return The UserDTO of the found user
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Get user details by ID")
+    @Operation(summary = "Get user details by ID (Admin only)")
     public UserDTO getUser(@PathVariable Long id) {
         log.info("Fetching user with ID: {}", id);
         User user = userService.getUserById(id);

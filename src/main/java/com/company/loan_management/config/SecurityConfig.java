@@ -69,7 +69,7 @@ public class SecurityConfig {
                                 "/v2/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll() // Allow login/register
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow admin access to /admin/**
+                        .requestMatchers("/api/users/**","/api/loans/**").hasRole("ADMIN") // Only allow admin access to /admin/**
                         .anyRequest().authenticated() // Secure all other endpoints
         );
 
