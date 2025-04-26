@@ -3,44 +3,93 @@ package com.company.loan_management.service;
 import com.company.loan_management.model.Loan;
 import com.company.loan_management.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service implementation for managing loan metadata.
+ * Admins can perform CRUD operations on loan types.
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoanServiceImpl implements LoanService {
 
     private final LoanRepository loanRepository;
 
+    /**
+     * Create a new loan type. Prevents duplicates based on loanType.
+     *
+     * @param loan the loan metadata to create
+     * @return the saved Loan
+     */
     @Override
     public Loan createLoan(Loan loan) {
-        return loanRepository.save(loan);
+        log.info("Attempting to create loan type: {}", loan.getLoanType());
+        loanRepository.findByLoanType(loan.getLoanType()).ifPresent(existing -> {
+            throw new IllegalArgumentException("Loan type already exists: " + loan.getLoanType());
+        });
+        Loan saved = loanRepository.save(loan);
+        log.info("Loan type created successfully: {}", saved.getLoanType());
+        return saved;
     }
 
+    /**
+     * Get all available loan types.
+     *
+     * @return list of all Loan metadata
+     */
     @Override
     public List<Loan> getAllLoans() {
+        log.info("Fetching all loan types...");
         return loanRepository.findAll();
     }
 
+    /**
+     * Get a loan type by its ID.
+     *
+     * @param id loan ID
+     * @return the Loan if found
+     */
     @Override
     public Loan getLoanById(Long id) {
-        return loanRepository.findById(id).orElseThrow(() -> new RuntimeException("Loan not found"));
+        log.info("Fetching loan by ID: {}", id);
+        return loanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan not found with ID: " + id));
     }
 
+    /**
+     * Update a loan type by ID.
+     *
+     * @param id   loan ID
+     * @param loan updated loan data
+     * @return updated Loan
+     */
     @Override
     public Loan updateLoan(Long id, Loan loan) {
+        log.info("Updating loan ID {} with new data: {}", id, loan);
         Loan existing = getLoanById(id);
         existing.setLoanType(loan.getLoanType());
         existing.setMaxAmount(loan.getMaxAmount());
         existing.setInterestRate(loan.getInterestRate());
         existing.setDurationMonths(loan.getDurationMonths());
-        return loanRepository.save(existing);
+        Loan updated = loanRepository.save(existing);
+        log.info("Loan updated successfully: {}", updated);
+        return updated;
     }
 
+    /**
+     * Delete a loan type by ID. Throws exception if loan does not exist.
+     *
+     * @param id loan ID
+     */
     @Override
     public void deleteLoan(Long id) {
-        loanRepository.deleteById(id);
+        log.info("Attempting to delete loan with ID: {}", id);
+        Loan existing = getLoanById(id); // Validates existence
+        loanRepository.delete(existing);
+        log.info("Loan with ID {} deleted successfully", id);
     }
 }
-
