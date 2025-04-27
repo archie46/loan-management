@@ -3,7 +3,6 @@ package com.company.loan_management.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "users")

@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         try {
             logger.info("Retrieving all users");
-            return (List<User>) userRepository.findAll();
+            return userRepository.findAll();
         } catch (Exception e) {
             logger.error("Error retrieving all users", e);
             throw e;
