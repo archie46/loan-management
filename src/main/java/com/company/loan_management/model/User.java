@@ -3,6 +3,8 @@ package com.company.loan_management.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "users")
 
@@ -26,6 +28,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(unique = true, nullable = false)
+    private String username;
+
     @Column(nullable = false)
     private String password;
 
@@ -35,10 +40,9 @@ public class User {
     @Column(nullable = false)
     private String bankAccountNumber;
 
-    private String department;
+    private Double accountBalance = 0.0;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    private String department;
 
     private boolean isActive = true;
 }

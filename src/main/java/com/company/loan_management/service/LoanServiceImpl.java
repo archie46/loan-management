@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service implementation for managing loan metadata.
@@ -91,5 +92,10 @@ public class LoanServiceImpl implements LoanService {
         Loan existing = getLoanById(id); // Validates existence
         loanRepository.delete(existing);
         log.info("Loan with ID {} deleted successfully", id);
+    }
+
+    @Override
+    public Optional<Loan> getLoanByType(String loanType) {
+        return loanRepository.findByLoanType(loanType);
     }
 }

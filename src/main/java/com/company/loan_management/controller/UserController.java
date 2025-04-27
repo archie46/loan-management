@@ -8,12 +8,17 @@ import com.company.loan_management.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -112,5 +117,27 @@ public class UserController {
                 .stream()
                 .map(UserMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+
+    /**
+     * API to fetch the currently logged-in user's profile details.
+     *
+     * @param authentication Spring Security Authentication object (auto-injected).
+     * @return User details if found, otherwise HTTP 404.
+     */
+    @Operation(summary = "Get My User Details", description = "Fetches the profile details of the currently logged-in user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved user details"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<User> getMyDetails(Authentication authentication) {
+        String username = authentication.getName(); // Get the username of the logged-in user
+
+        Optional<User> user = userService.findByUsername(username);
+
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

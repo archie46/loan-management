@@ -1,5 +1,6 @@
 package com.company.loan_management.mapper;
 
+import com.company.loan_management.dto.ManagerDTO;
 import com.company.loan_management.dto.UserDTO;
 import com.company.loan_management.model.User;
 import com.company.loan_management.model.Role;
@@ -35,6 +36,23 @@ public class UserMapper {
         logger.info("UserDTO created successfully for user with ID: {}", user.getId());
         return userDTO;
     }
+
+    /**
+     * Manager mapping: Converts a User entity to a smaller ManagerDTO.
+     */
+    public static ManagerDTO toManagerDTO(@NotNull User user) {
+        logger.info("Mapping User entity to ManagerDTO for user with ID: {}", user.getId());
+
+        ManagerDTO managerDTO = ManagerDTO.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .department(user.getDepartment())
+                .build();
+
+        logger.info("ManagerDTO created successfully for user with ID: {}", user.getId());
+        return managerDTO;
+    }
+
 
     /**
      * Converts a UserDTO to a User entity.

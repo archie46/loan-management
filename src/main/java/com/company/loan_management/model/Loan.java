@@ -23,6 +23,10 @@ public class Loan {
     @Column(nullable = false)
     private Double interestRate;
 
+    @ManyToOne
+    @JoinColumn(name = "approver_manager_id")
+    private User approverManager;
+
     @Column(nullable = false)
     private Integer durationMonths; // total months for repayment
 }
