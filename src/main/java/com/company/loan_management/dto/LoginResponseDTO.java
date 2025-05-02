@@ -6,11 +6,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginResponse {
+public class LoginResponseDTO {
     private String token;
     private String username;
 
-    public LoginResponse(String token, String username) {
+    public LoginResponseDTO(String token, String username) {
         this.token = token;
         this.username = username;
     }

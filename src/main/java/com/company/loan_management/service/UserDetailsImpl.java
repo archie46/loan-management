@@ -1,4 +1,4 @@
-package com.company.loan_management.config;
+package com.company.loan_management.service;
 
 
 import com.company.loan_management.model.User;

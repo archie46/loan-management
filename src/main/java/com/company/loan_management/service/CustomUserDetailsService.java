@@ -1,6 +1,5 @@
 package com.company.loan_management.service;
 
-import com.company.loan_management.config.UserDetailsImpl;
 import com.company.loan_management.model.User;
 import com.company.loan_management.repository.UserRepository;
 import org.slf4j.Logger;

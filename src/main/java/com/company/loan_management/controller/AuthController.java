@@ -1,7 +1,7 @@
 package com.company.loan_management.controller;
 
-import com.company.loan_management.dto.LoginRequest;
-import com.company.loan_management.dto.LoginResponse;
+import com.company.loan_management.dto.LoginRequestDTO;
+import com.company.loan_management.dto.LoginResponseDTO;
 import com.company.loan_management.jwt.JwtUtil;
 import com.company.loan_management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,37 +43,37 @@ public class AuthController {
     /**
      * Authenticates the user and returns a JWT token along with user details if successful.
      *
-     * @param loginRequest Object containing the username and password.
+     * @param loginRequestDTO Object containing the username and password.
      * @return ResponseEntity with status and JWT token if authentication is successful, or error message.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        logger.info("Attempting to authenticate user with username: {}", loginRequest.getUsername());
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        logger.info("Attempting to authenticate user with username: {}", loginRequestDTO.getUsername());
 
         try {
             // Authenticate the user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword()
+                            loginRequestDTO.getUsername(),
+                            loginRequestDTO.getPassword()
                     )
             );
 
             // Generate JWT token
             String token = jwtUtil.generateToken(authentication.getName());
-            logger.info("Authentication successful for username: {}", loginRequest.getUsername());
+            logger.info("Authentication successful for username: {}", loginRequestDTO.getUsername());
 
             // Fetch user details
-            LoginResponse response = new LoginResponse(token, loginRequest.getUsername());
+            LoginResponseDTO response = new LoginResponseDTO(token, loginRequestDTO.getUsername());
 
 
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {
-            logger.warn("Invalid credentials for username: {}", loginRequest.getUsername());
+            logger.warn("Invalid credentials for username: {}", loginRequestDTO.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         } catch (Exception e) {
-            logger.error("An error occurred during login for username: {}", loginRequest.getUsername(), e);
+            logger.error("An error occurred during login for username: {}", loginRequestDTO.getUsername(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
