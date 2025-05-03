@@ -2,12 +2,10 @@ package com.company.loan_management.mapper;
 
 import com.company.loan_management.dto.UserLoanRequestDTO;
 import com.company.loan_management.model.LoanRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserLoanRequestMapper {
 
-    @Autowired
-    private UserMapper userMapper;
+    private UserLoanRequestMapper(){}
 
     /**
      * Maps a LoanRequest entity to its corresponding UserLoanRequestDTO.

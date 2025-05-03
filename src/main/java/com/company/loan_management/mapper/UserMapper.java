@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 
 public class UserMapper {
 
+    private UserMapper(){}
+
+
     // Logger to log the mapping process
     private static final Logger logger = LoggerFactory.getLogger(UserMapper.class);
 

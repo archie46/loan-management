@@ -59,7 +59,7 @@ public class UserController {
         return userService.getAllUsers()
                 .stream()
                 .map(UserMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -116,7 +116,7 @@ public class UserController {
         return userService.getUsersByRole(Role.valueOf(role))
                 .stream()
                 .map(UserMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 

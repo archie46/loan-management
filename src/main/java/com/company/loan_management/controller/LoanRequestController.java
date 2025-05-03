@@ -181,7 +181,7 @@ public class LoanRequestController {
 
         return loanRequests.stream()
                 .map(ManagerLoanRequestMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
 
         
     }

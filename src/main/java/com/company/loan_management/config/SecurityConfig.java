@@ -61,7 +61,7 @@ public class SecurityConfig {
         logger.info("Configuring HTTP security...");
 
         // Allow certain endpoints to be accessed without authentication
-        http.authorizeHttpRequests((requests) ->
+        http.authorizeHttpRequests(requests ->
                 requests.requestMatchers("/api/auth/login", "/","/h2-console/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -136,7 +136,7 @@ public class SecurityConfig {
     private static CorsConfigurationSource corsConfigurationSource() {
         var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+        corsConfiguration.setAllowedOrigins(List.of("*"));
 
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
                 "Accept", "Authorization", "X-Requested-With",

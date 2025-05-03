@@ -69,7 +69,7 @@ public class LoanController {
         return loanService.getAllLoans()
                 .stream()
                 .map(LoanMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

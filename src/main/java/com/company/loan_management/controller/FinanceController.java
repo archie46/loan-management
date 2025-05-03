@@ -52,7 +52,7 @@ public class FinanceController {
         return loanRepaymentService.getRepaymentsByRequest(loanRequestId)
                 .stream()
                 .map(LoanRepaymentMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

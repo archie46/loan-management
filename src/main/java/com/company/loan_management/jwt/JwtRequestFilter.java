@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,14 +21,15 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     // Logger for the JwtRequestFilter class
-    private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtRequestFilter.class);
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
+    public JwtRequestFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
     /**
      * The main filter logic for validating JWT tokens and authenticating users.
      * This method checks if the request has a valid JWT token in the Authorization header,
@@ -57,7 +57,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             // Extract the username from the JWT token
             username = jwtUtil.extractUsername(jwt);
-            logger.debug("Extracted JWT token for username: {}", username);
+            log.debug("Extracted JWT token for username: {}", username);
         }
 
         // If the username is present and no authentication is set yet in the SecurityContext
@@ -66,8 +66,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             // Validate the token against the username
-            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
-                logger.debug("JWT is valid for user: {}", username);
+            if (Boolean.TRUE.equals(jwtUtil.validateToken(jwt, userDetails.getUsername()))) {
+                log.debug("JWT is valid for user: {}", username);
 
                 // If the token is valid, create an authentication token
                 var authToken = new UsernamePasswordAuthenticationToken(
@@ -79,9 +79,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 // Set the authentication token in the SecurityContext to mark the user as authenticated
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                logger.info("User {} authenticated successfully", username);
+                log.info("User {} authenticated successfully", username);
             } else {
-                logger.warn("JWT token is invalid for user: {}", username);
+                log.warn("JWT token is invalid for user: {}", username);
             }
         }
 

@@ -5,6 +5,8 @@ import com.company.loan_management.model.LoanRepayment;
 
 public class LoanRepaymentMapper {
 
+    private LoanRepaymentMapper(){}
+
     public static LoanRepaymentDTO toDTO(LoanRepayment repayment) {
         return LoanRepaymentDTO.builder()
                 .id(repayment.getId())

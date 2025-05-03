@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoanMapper {
 
+    private LoanMapper(){}
+
     /**
      * Converts a Loan entity to a LoanDTO.
      *
