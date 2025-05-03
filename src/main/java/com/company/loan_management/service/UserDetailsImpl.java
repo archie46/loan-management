@@ -9,8 +9,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Custom implementation of UserDetails to encapsulate user information for authentication.
@@ -36,7 +38,25 @@ public class UserDetailsImpl implements UserDetails {
         this.username = user.getUsername();
         this.password = user.getPassword();
         // Creating a GrantedAuthority from the user's role
-        this.authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+
+        // Add the user's main role
+        authorityList.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
+        // Add ROLE_USER if role is ADMIN, MANAGER, or FINANCE
+        switch (user.getRole()) {
+            case ADMIN,MANAGER,FINANCE:
+                authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+                break;
+            default:
+                // No additional roles
+                break;
+        }
+
+        this.authorities = authorityList;
+
+
         logger.info("UserDetailsImpl created for user: {}", username);
     }
 
