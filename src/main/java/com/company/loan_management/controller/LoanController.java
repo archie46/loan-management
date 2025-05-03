@@ -11,10 +11,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -47,7 +47,8 @@ public class LoanController {
         log.info("Creating loan type: {}", loan.getLoanType());
         Loan savedLoan = loanService.createLoan(loan);
         log.info("Loan type created: {}", savedLoan.getLoanType());
-        return new ResponseEntity<>(LoanMapper.toDTO(savedLoan), HttpStatus.CREATED);
+        URI location = URI.create("/api/loans/" + savedLoan.getId());
+        return ResponseEntity.created(location).body(LoanMapper.toDTO(savedLoan));
     }
 
     /**

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +34,10 @@ public class FinanceController {
     @Operation(summary = "Disburse loan", description = "Disburses an approved loan and generates monthly repayment schedule.")
     @PostMapping("/disburse/{loanRequestId}")
     @PreAuthorize("hasRole('FINANCE')")
-    public String disburseLoan(@PathVariable Long loanRequestId) {
+    public ResponseEntity<String> disburseLoan(@PathVariable Long loanRequestId) {
         log.info("Disbursing loan and generating schedule for LoanRequestId: {}", loanRequestId);
         loanRepaymentService.generateRepayments(loanRequestId);
-        return "✅ Loan disbursed and repayment schedule generated.";
+        return ResponseEntity.ok("Loan disbursed and repayment schedule generated.");
     }
 
     /**
@@ -46,12 +47,12 @@ public class FinanceController {
      */
     @Operation(summary = "Get repayment schedule", description = "Retrieves repayment schedule for a particular loan request.")
     @GetMapping("/repayments/{loanRequestId}")
-    public List<LoanRepaymentDTO> getRepaymentSchedule(@PathVariable Long loanRequestId) {
+    public ResponseEntity<List<LoanRepaymentDTO>> getRepaymentSchedule(@PathVariable Long loanRequestId) {
         log.info("Fetching repayment schedule for LoanRequestId: {}", loanRequestId);
-        return loanRepaymentService.getRepaymentsByRequest(loanRequestId)
+        return ResponseEntity.ok(loanRepaymentService.getRepaymentsByRequest(loanRequestId)
                 .stream()
                 .map(LoanRepaymentMapper::toDTO)
-                .toList();
+                .toList());
     }
 
     /**
@@ -62,9 +63,9 @@ public class FinanceController {
     @Operation(summary = "Mark repayment as paid", description = "Marks a repayment entry as fully paid.")
     @PutMapping("/repayments/{repaymentId}/mark-paid")
     @PreAuthorize("hasRole('FINANCE')")
-    public String markRepaymentAsPaid(@PathVariable Long repaymentId) {
+    public ResponseEntity<String> markRepaymentAsPaid(@PathVariable Long repaymentId) {
         log.info("Marking repayment as PAID for RepaymentId: {}", repaymentId);
         loanRepaymentService.markAsPaid(repaymentId);
-        return "✅ Repayment marked as PAID.";
+        return ResponseEntity.ok("Repayment marked as PAID.");
     }
 }

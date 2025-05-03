@@ -23,9 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Controller to handle Loan Request related operations
@@ -48,7 +48,7 @@ public class LoanRequestController {
      */
     @Operation(summary = "Apply for a loan", description = "User applies for a loan by providing Details.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Loan request created successfully"),
+            @ApiResponse(responseCode = "201", description = "Loan request created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     @PostMapping("/apply")
@@ -85,7 +85,8 @@ public class LoanRequestController {
             UserLoanRequestDTO responseDto = UserLoanRequestMapper.toDTO(savedLoanRequest);
 
             // Return success response with the loan request details
-            return ResponseEntity.ok(responseDto);
+            URI location = URI.create("/api/loan-requests/" + savedLoanRequest.getId());
+            return ResponseEntity.created(location).body(responseDto);
         } catch (Exception e) {
             log.error("Error applying for loan: {}", e.getMessage(), e);
             throw new InvalidLoanRequestException("Something went wrong while processing the loan request.");
@@ -140,7 +141,7 @@ public class LoanRequestController {
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/user/{userId}")
-    public List<UserLoanRequestDTO> getUserLoanRequests(
+    public ResponseEntity<List<UserLoanRequestDTO>> getUserLoanRequests(
             @PathVariable Long userId,
             @RequestParam(required = false) String status) {
         log.info("User {} fetching their loan requests, status filter: {}", userId, status);
@@ -151,7 +152,7 @@ public class LoanRequestController {
         // Map loan requests to UserLoanRequestDTO, ensuring no sensitive data is exposed
         // Exposing only username, not sensitive user data
 
-        return loanRequests.stream()
+        return ResponseEntity.ok(loanRequests.stream()
                 .map(loanRequest -> UserLoanRequestDTO.builder()
                         .id(loanRequest.getId())
                         .username(loanRequest.getUser().getUsername()) // Exposing only username, not sensitive user data
@@ -159,7 +160,7 @@ public class LoanRequestController {
                         .status(loanRequest.getStatus())
                         .requestedAmount(loanRequest.getRequestedAmount())
                         .build())
-                .collect(Collectors.toList());
+                .toList());
     }
 
 
@@ -174,16 +175,16 @@ public class LoanRequestController {
     })
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/manager/{managerId}")
-    public List<ManagerLoanRequestDTO> getManagerLoanRequests(
+    public ResponseEntity<List<ManagerLoanRequestDTO>> getManagerLoanRequests(
             @PathVariable Long managerId,
             @RequestParam(required = false) String status) {
         log.info("Manager {} fetching assigned loan requests, status filter: {}", managerId, status);
         List<LoanRequest> loanRequests = loanRequestService.getLoanRequestsAssignedToManager(managerId, status);
         // Map LoanRequest entities to ManagerLoanRequestDTOs
 
-        return loanRequests.stream()
+        return ResponseEntity.ok(loanRequests.stream()
                 .map(ManagerLoanRequestMapper::toDTO)
-                .toList();
+                .toList());
 
         
     }

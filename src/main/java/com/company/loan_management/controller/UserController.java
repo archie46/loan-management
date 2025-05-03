@@ -15,12 +15,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for managing User-related administrative operations.
@@ -42,7 +43,7 @@ public class UserController {
      */
     @PostMapping
     @Operation(summary = "Create a new user (Admin only)")
-    public UserDTO createUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody User user) {
         log.info("Creating new user: {}", user.getUsername());
 
         if (userService.findByUsername(user.getUsername()).isPresent()) {
@@ -50,7 +51,8 @@ public class UserController {
         }
 
         User savedUser = userService.createUser(user);
-        return UserMapper.toDTO(savedUser);
+        URI location = URI.create("/api/users/" + savedUser.getId());
+        return ResponseEntity.created(location).body(UserMapper.toDTO(savedUser));
     }
 
     /**
@@ -60,12 +62,12 @@ public class UserController {
      */
     @GetMapping
     @Operation(summary = "Get all users (Admin only)")
-    public List<UserDTO> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         log.info("Fetching all users");
-        return userService.getAllUsers()
+        return  ResponseEntity.ok(userService.getAllUsers()
                 .stream()
                 .map(UserMapper::toDTO)
-                .toList();
+                .toList());
     }
 
     /**
@@ -76,7 +78,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Get user details by ID (Admin only)")
-    public UserDTO getUser(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
         log.info("Fetching user with ID: {}", id);
 
         User user = userService.getUserById(id);
@@ -84,7 +86,7 @@ public class UserController {
             throw new UserNotFoundException("User with ID " + id + " not found");
         }
 
-        return UserMapper.toDTO(user);
+        return ResponseEntity.ok(UserMapper.toDTO(user));
     }
 
     /**
@@ -96,7 +98,7 @@ public class UserController {
      */
     @PutMapping("/{id}")
     @Operation(summary = "Update user information (Admin only)")
-    public UserDTO updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody User user) {
         log.info("Updating user with ID: {}", id);
 
         User existingUser = userService.getUserById(id);
@@ -105,7 +107,7 @@ public class UserController {
         }
 
         User updatedUser = userService.updateUser(id, user);
-        return UserMapper.toDTO(updatedUser);
+        return ResponseEntity.ok(UserMapper.toDTO(updatedUser));
     }
 
     /**
@@ -115,7 +117,7 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete user by ID (Admin only)")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         log.warn("Deleting user with ID: {}", id);
 
         User user = userService.getUserById(id);
@@ -124,6 +126,7 @@ public class UserController {
         }
 
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -134,14 +137,14 @@ public class UserController {
      */
     @GetMapping("/role/{role}")
     @Operation(summary = "Get users by role (Admin only)")
-    public List<UserDTO> getUsersByRole(@PathVariable String role) {
+    public ResponseEntity<List<UserDTO>> getUsersByRole(@PathVariable String role) {
         log.info("Fetching users by role: {}", role);
         try {
             Role parsedRole = Role.valueOf(role.toUpperCase());
-            return userService.getUsersByRole(parsedRole)
+            return ResponseEntity.ok(userService.getUsersByRole(parsedRole)
                     .stream()
                     .map(UserMapper::toDTO)
-                    .toList();
+                    .toList());
         } catch (IllegalArgumentException ex) {
             throw new InvalidRoleException("Invalid role: " + role);
         }
