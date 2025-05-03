@@ -61,11 +61,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleAllUncaught(Exception ex) {
-        logger.error("Unhandled exception", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
-    }
 
     @ExceptionHandler(InvalidLoanRequestException.class)
     public ResponseEntity<String> handleInvalidLoanRequest(InvalidLoanRequestException ex) {
