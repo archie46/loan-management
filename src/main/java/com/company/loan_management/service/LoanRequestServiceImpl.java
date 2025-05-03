@@ -1,5 +1,6 @@
 package com.company.loan_management.service;
 
+import com.company.loan_management.exception.*;
 import com.company.loan_management.model.Loan;
 import com.company.loan_management.model.LoanRequest;
 import com.company.loan_management.model.User;
@@ -24,11 +25,10 @@ public class LoanRequestServiceImpl implements LoanRequestService {
      * User applies for a new loan.
      */
     @Override
-    public LoanRequest applyForLoan(Long userId, Loan loan,Double requestedAmount) {
+    public LoanRequest applyForLoan(Long userId, Loan loan, Double requestedAmount) {
         log.info("User {} applying for {} Loan", userId, loan.getLoanType());
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
         LoanRequest request = LoanRequest.builder()
                 .user(user)
@@ -48,14 +48,14 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     public LoanRequest cancelLoanRequest(Long requestId, Long userId) {
         log.info("User {} attempting to cancel loan request {}", userId, requestId);
         LoanRequest request = loanRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Loan request not found"));
+                .orElseThrow(() -> new LoanRequestNotFoundException("Loan request not found with ID: " + requestId));
 
         if (!request.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Unauthorized action.");
+            throw new UnauthorizedActionException("User is not authorized to cancel this loan request.");
         }
 
         if (!"PENDING".equals(request.getStatus())) {
-            throw new RuntimeException("Only pending requests can be canceled.");
+            throw new InvalidLoanStatusException("Only pending requests can be canceled.");
         }
 
         request.setStatus("CANCELED");
@@ -93,10 +93,10 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     public LoanRequest approveLoanRequest(Long requestId, Long managerId, Double approvedAmount, String managerRemarks) {
         log.info("Manager {} approving loan request {}", managerId, requestId);
         LoanRequest request = loanRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Loan request not found"));
+                .orElseThrow(() -> new LoanRequestNotFoundException("Loan request not found with ID: " + requestId));
 
         if (!request.getAssignedManager().getId().equals(managerId)) {
-            throw new RuntimeException("Unauthorized action.");
+            throw new UnauthorizedActionException("Manager not authorized to approve this loan request.");
         }
 
         request.setStatus("APPROVED");
@@ -114,10 +114,10 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     public LoanRequest rejectLoanRequest(Long requestId, Long managerId, String managerRemarks) {
         log.info("Manager {} rejecting loan request {}", managerId, requestId);
         LoanRequest request = loanRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Loan request not found"));
+                .orElseThrow(() -> new LoanRequestNotFoundException("Loan request not found with ID: " + requestId));
 
         if (!request.getAssignedManager().getId().equals(managerId)) {
-            throw new RuntimeException("Unauthorized action.");
+            throw new UnauthorizedActionException("Manager not authorized to reject this loan request.");
         }
 
         request.setStatus("REJECTED");
@@ -146,10 +146,10 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     public LoanRequest disburseLoan(Long requestId) {
         log.info("Disbursing loan request {}", requestId);
         LoanRequest request = loanRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Loan request not found"));
+                .orElseThrow(() -> new LoanRequestNotFoundException("Loan request not found with ID: " + requestId));
 
         if (!"APPROVED".equals(request.getStatus())) {
-            throw new RuntimeException("Only approved loans can be disbursed.");
+            throw new InvalidLoanStatusException("Only approved loans can be disbursed.");
         }
 
         request.setStatus("DISBURSED");

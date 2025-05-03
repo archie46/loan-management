@@ -1,5 +1,7 @@
 package com.company.loan_management.service;
 
+import com.company.loan_management.exception.LoanRequestNotFoundException;
+import com.company.loan_management.exception.RepaymentNotFoundException;
 import com.company.loan_management.model.LoanRepayment;
 import com.company.loan_management.model.LoanRequest;
 import com.company.loan_management.model.User;
@@ -35,7 +37,7 @@ public class LoanRepaymentServiceImpl implements LoanRepaymentService {
         log.info("Generating repayment schedule for Loan Request ID: {}", loanRequestId);
 
         LoanRequest request = loanRequestRepository.findById(loanRequestId)
-                .orElseThrow(() -> new RuntimeException("Loan Request not found"));
+                .orElseThrow(() -> new LoanRequestNotFoundException("Loan Request not found with ID: " + loanRequestId));
 
         double principalAmount = request.getRequestedAmount();
         double annualInterestRate = request.getLoan().getInterestRate();
@@ -96,7 +98,7 @@ public class LoanRepaymentServiceImpl implements LoanRepaymentService {
         log.info("Marking repayment as PAID for Repayment ID: {}", repaymentId);
 
         LoanRepayment repayment = repaymentRepository.findById(repaymentId)
-                .orElseThrow(() -> new RuntimeException("Repayment not found"));
+                .orElseThrow(() -> new RepaymentNotFoundException("Repayment not found with ID: " + repaymentId));
 
         repayment.setStatus("PAID");
         repaymentRepository.save(repayment);

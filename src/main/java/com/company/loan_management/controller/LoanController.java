@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * REST Controller for managing loan metadata. Admin can perform CRUD operations.
@@ -44,11 +43,11 @@ public class LoanController {
                     @ApiResponse(description = "Invalid input data", responseCode = "400")
             })
     @PostMapping
-    public LoanDTO createLoan(@Valid @RequestBody Loan loan) {
+    public ResponseEntity<LoanDTO> createLoan(@Valid @RequestBody Loan loan) {
         log.info("Creating loan type: {}", loan.getLoanType());
         Loan savedLoan = loanService.createLoan(loan);
-        log.info("Loan type created successfully: {}", savedLoan.getLoanType());
-        return LoanMapper.toDTO(savedLoan);
+        log.info("Loan type created: {}", savedLoan.getLoanType());
+        return new ResponseEntity<>(LoanMapper.toDTO(savedLoan), HttpStatus.CREATED);
     }
 
     /**
@@ -64,12 +63,13 @@ public class LoanController {
                                     schema = @Schema(implementation = LoanDTO.class)))
             })
     @GetMapping
-    public List<LoanDTO> getAllLoans() {
+    public ResponseEntity<List<LoanDTO>> getAllLoans() {
         log.info("Fetching all loan types...");
-        return loanService.getAllLoans()
+        List<LoanDTO> loanDTOs = loanService.getAllLoans()
                 .stream()
                 .map(LoanMapper::toDTO)
                 .toList();
+        return ResponseEntity.ok(loanDTOs);
     }
 
     /**
@@ -87,10 +87,10 @@ public class LoanController {
                     @ApiResponse(description = "Loan not found", responseCode = "404")
             })
     @GetMapping("/{id}")
-    public LoanDTO getLoan(@PathVariable Long id) {
+    public ResponseEntity<LoanDTO> getLoan(@PathVariable Long id) {
         log.info("Fetching loan type by ID: {}", id);
-        Loan loan = loanService.getLoanById(id);
-        return LoanMapper.toDTO(loan);
+        Loan loan = loanService.getLoanById(id); // throws LoanNotFoundException if not found
+        return ResponseEntity.ok(LoanMapper.toDTO(loan));
     }
 
     /**
@@ -110,11 +110,10 @@ public class LoanController {
                     @ApiResponse(description = "Invalid input data", responseCode = "400")
             })
     @PutMapping("/{id}")
-    public LoanDTO updateLoan(@PathVariable Long id, @Valid @RequestBody Loan loan) {
-        log.info("Updating loan type ID {} with new data: {}", id, loan);
-        Loan updatedLoan = loanService.updateLoan(id, loan);
-        log.info("Loan type updated successfully: {}", updatedLoan.getLoanType());
-        return LoanMapper.toDTO(updatedLoan);
+    public ResponseEntity<LoanDTO> updateLoan(@PathVariable Long id, @Valid @RequestBody Loan loan) {
+        log.info("Updating loan ID {} with new data", id);
+        Loan updatedLoan = loanService.updateLoan(id, loan); // throws LoanNotFoundException if not found
+        return ResponseEntity.ok(LoanMapper.toDTO(updatedLoan));
     }
 
     /**
@@ -132,8 +131,7 @@ public class LoanController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLoan(@PathVariable Long id) {
         log.info("Deleting loan type with ID: {}", id);
-        loanService.deleteLoan(id);
-        log.info("Loan type with ID {} deleted successfully", id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        loanService.deleteLoan(id); // throws LoanNotFoundException if not found
+        return ResponseEntity.noContent().build();
     }
 }

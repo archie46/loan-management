@@ -51,34 +51,34 @@ public class DataInitializer {
                     userService
             );
 
-            User defaultManager = createUserIfNotExists(
-                    "jane_manager",
-                    "Jane Manager",
-                    "jane@example.com",
-                    "password",
-                    Role.MANAGER,
-                    "3333333333",
-                    75000.0,
-                    30000.00,
-                    userService
-            );
-
-            User defaultFinance = createUserIfNotExists(
-                    "finance_guy",
-                    "Finance Guy",
-                    "finance@example.com",
-                    "password",
-                    Role.FINANCE,
-                    "4444444444",
-                    80000.0,
-                    40000.00,
-                    userService
-            );
-
-            // Create Loans
-            createLoanIfNotExists("Home Loan", 5000000.0, 7.5, 240,defaultManager, loanService);
-            createLoanIfNotExists("Education Loan", 2000000.0, 5.0, 120,defaultManager, loanService);
-            createLoanIfNotExists("Car Loan", 1000000.0, 8.0, 60,defaultManager, loanService);
+//            User defaultManager = createUserIfNotExists(
+//                    "jane_manager",
+//                    "Jane Manager",
+//                    "jane@example.com",
+//                    "password",
+//                    Role.MANAGER,
+//                    "3333333333",
+//                    75000.0,
+//                    30000.00,
+//                    userService
+//            );
+//
+//            User defaultFinance = createUserIfNotExists(
+//                    "finance_guy",
+//                    "Finance Guy",
+//                    "finance@example.com",
+//                    "password",
+//                    Role.FINANCE,
+//                    "4444444444",
+//                    80000.0,
+//                    40000.00,
+//                    userService
+//            );
+//
+//            // Create Loans
+//            createLoanIfNotExists("Home Loan", 5000000.0, 7.5, 240,defaultManager, loanService);
+//            createLoanIfNotExists("Education Loan", 2000000.0, 5.0, 120,defaultManager, loanService);
+//            createLoanIfNotExists("Car Loan", 1000000.0, 8.0, 60,defaultManager, loanService);
         };
     }
 

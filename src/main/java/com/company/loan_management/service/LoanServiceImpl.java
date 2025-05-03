@@ -1,5 +1,6 @@
 package com.company.loan_management.service;
 
+import com.company.loan_management.exception.LoanNotFoundException;
 import com.company.loan_management.model.Loan;
 import com.company.loan_management.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class LoanServiceImpl implements LoanService {
     public Loan getLoanById(Long id) {
         log.info("Fetching loan by ID: {}", id);
         return loanRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Loan not found with ID: " + id));
+                .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
     }
 
     /**
@@ -71,13 +72,15 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Loan updateLoan(Long id, Loan loan) {
         log.info("Updating loan ID {} with new data: {}", id, loan);
-        Loan existing = getLoanById(id);
+        Loan existing = getLoanById(id); // throws LoanNotFoundException
+
         existing.setLoanType(loan.getLoanType());
         existing.setMaxAmount(loan.getMaxAmount());
         existing.setInterestRate(loan.getInterestRate());
         existing.setDurationMonths(loan.getDurationMonths());
+
         Loan updated = loanRepository.save(existing);
-        log.info("Loan updated successfully: {}", updated);
+        log.info("Loan updated successfully: {}", updated.getLoanType());
         return updated;
     }
 
@@ -89,7 +92,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public void deleteLoan(Long id) {
         log.info("Attempting to delete loan with ID: {}", id);
-        Loan existing = getLoanById(id); // Validates existence
+        Loan existing = getLoanById(id); // throws LoanNotFoundException
         loanRepository.delete(existing);
         log.info("Loan with ID {} deleted successfully", id);
     }

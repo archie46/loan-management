@@ -3,10 +3,8 @@ package com.company.loan_management.controller;
 import com.company.loan_management.dto.LoginRequestDTO;
 import com.company.loan_management.dto.LoginResponseDTO;
 import com.company.loan_management.jwt.JwtUtil;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +19,6 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-
-
 
     public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
@@ -39,34 +35,22 @@ public class AuthController {
     public ResponseEntity<Object> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         logger.info("Attempting to authenticate user with username: {}", loginRequestDTO.getUsername());
 
-        try {
-            // Authenticate the user
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequestDTO.getUsername(),
-                            loginRequestDTO.getPassword()
-                    )
-            );
+        // Authenticate the user
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequestDTO.getUsername(),
+                        loginRequestDTO.getPassword()
+                )
+        );
 
-            // Generate JWT token
-            String token = jwtUtil.generateToken(authentication.getName());
-            logger.info("Authentication successful for username: {}", loginRequestDTO.getUsername());
+        // Generate JWT token
+        String token = jwtUtil.generateToken(authentication.getName());
+        logger.info("Authentication successful for username: {}", loginRequestDTO.getUsername());
 
-            // Fetch user details
-            LoginResponseDTO response = new LoginResponseDTO(token, loginRequestDTO.getUsername());
+        // Fetch user details
+        LoginResponseDTO response = new LoginResponseDTO(token, loginRequestDTO.getUsername());
 
-
-            return ResponseEntity.ok(response);
-
-        } catch (BadCredentialsException e) {
-            logger.warn("Invalid credentials for username: {}", loginRequestDTO.getUsername());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        } catch (Exception e) {
-            logger.error("An error occurred during login for username: {}", loginRequestDTO.getUsername(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
-        }
+        return ResponseEntity.ok(response);
     }
 
 }
-
-

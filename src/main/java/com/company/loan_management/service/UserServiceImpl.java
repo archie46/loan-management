@@ -1,5 +1,6 @@
 package com.company.loan_management.service;
 
+import com.company.loan_management.exception.UserNotFoundException;
 import com.company.loan_management.model.Role;
 import com.company.loan_management.model.User;
 import com.company.loan_management.repository.UserRepository;
@@ -34,9 +35,16 @@ public class UserServiceImpl implements UserService {
     public User createUser(User user) {
         try {
             logger.info("Registering user with username: {}", user.getUsername());
+
+            if (userRepository.existsByUsername(user.getUsername())) {
+                throw new com.company.loan_management.exception.DuplicateUsernameException(
+                        "Username already exists: " + user.getUsername());
+            }
+
             String encodedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPassword);
             User savedUser = userRepository.save(user);
+
             logger.info("User registered successfully with username: {}", user.getUsername());
             return savedUser;
         } catch (Exception e) {
@@ -94,7 +102,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param id The ID of the user to update.
      * @param updatedUser The new user data.
-     * @return The updated user object, or null if not found.
+     * @return The updated user object.
      */
     public User updateUser(Long id, User updatedUser) {
         try {
@@ -109,9 +117,9 @@ public class UserServiceImpl implements UserService {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                 logger.info("User updated successfully with ID: {}", id);
                 return userRepository.save(existingUser);
-            }).orElseGet(() -> {
+            }).orElseThrow(() -> {
                 logger.warn("User with ID: {} not found for update", id);
-                return null;
+                return new UserNotFoundException("User with ID " + id + " not found");
             });
         } catch (Exception e) {
             logger.error("Error updating user with ID: {}", id, e);
@@ -131,6 +139,7 @@ public class UserServiceImpl implements UserService {
                 logger.info("Deleted user with ID: {}", id);
             } else {
                 logger.warn("User with ID: {} does not exist", id);
+                throw new UserNotFoundException("User with ID " + id + " does not exist");
             }
         } catch (Exception e) {
             logger.error("Error deleting user with ID: {}", id, e);
@@ -157,12 +166,13 @@ public class UserServiceImpl implements UserService {
      * Finds a user by their ID.
      *
      * @param id The ID of the user to find.
-     * @return The user object, or null if not found.
+     * @return The user object.
      */
     public User getUserById(Long id) {
         try {
             logger.info("Finding user by ID: {}", id);
-            return userRepository.findById(id).orElse(null);
+            return userRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
         } catch (Exception e) {
             logger.error("Error finding user by ID: {}", id, e);
             throw e;
