@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,6 +38,7 @@ public class UserDetailsImpl implements UserDetails {
         this.password = user.getPassword();
         // Creating a GrantedAuthority from the user's role
 
+
         List<GrantedAuthority> authorityList = new ArrayList<>();
 
         // Add the user's main role
@@ -55,8 +55,6 @@ public class UserDetailsImpl implements UserDetails {
         }
 
         this.authorities = authorityList;
-
-
         logger.info("UserDetailsImpl created for user: {}", username);
     }
 

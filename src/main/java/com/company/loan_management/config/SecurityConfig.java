@@ -70,7 +70,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll() // Allow login/register
                         .requestMatchers("/api/loans","/api/loan-requests/apply/**","/api/loan-requests/cancel/**","/api/users/me").hasRole("USER")
-                        .requestMatchers("/api/users/**","/api/loans/**").hasRole("ADMIN") // Only allow admin access to /admin/**
+                        .requestMatchers("/api/users/**","/api/loans","/api/loans/**").hasRole("ADMIN") // Only allow admin access to /admin/**
                         .requestMatchers("/api/loan-requests/manager/**").hasRole("MANAGER")
                         .anyRequest().authenticated() // Secure all other endpoints
         );
@@ -136,7 +136,7 @@ public class SecurityConfig {
     private static CorsConfigurationSource corsConfigurationSource() {
         var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000/"));
 
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
                 "Accept", "Authorization", "X-Requested-With",

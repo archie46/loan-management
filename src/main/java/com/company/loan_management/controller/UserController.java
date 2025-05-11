@@ -1,25 +1,27 @@
 package com.company.loan_management.controller;
 
 import com.company.loan_management.dto.UserDTO;
+import com.company.loan_management.exception.DuplicateUsernameException;
+import com.company.loan_management.exception.InvalidRoleException;
+import com.company.loan_management.exception.UserNotFoundException;
 import com.company.loan_management.mapper.UserMapper;
 import com.company.loan_management.model.Role;
 import com.company.loan_management.model.User;
 import com.company.loan_management.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
-
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Controller for managing User-related administrative operations.
@@ -41,10 +43,16 @@ public class UserController {
      */
     @PostMapping
     @Operation(summary = "Create a new user (Admin only)")
-    public UserDTO createUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody User user) {
         log.info("Creating new user: {}", user.getUsername());
+
+        if (userService.findByUsername(user.getUsername()).isPresent()) {
+            throw new DuplicateUsernameException("Username already exists: " + user.getUsername());
+        }
+
         User savedUser = userService.createUser(user);
-        return UserMapper.toDTO(savedUser);
+        URI location = URI.create("/api/users/" + savedUser.getId());
+        return ResponseEntity.created(location).body(UserMapper.toDTO(savedUser));
     }
 
     /**
@@ -54,12 +62,12 @@ public class UserController {
      */
     @GetMapping
     @Operation(summary = "Get all users (Admin only)")
-    public List<UserDTO> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         log.info("Fetching all users");
-        return userService.getAllUsers()
+        return  ResponseEntity.ok(userService.getAllUsers()
                 .stream()
                 .map(UserMapper::toDTO)
-                .toList();
+                .toList());
     }
 
     /**
@@ -70,10 +78,15 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Get user details by ID (Admin only)")
-    public UserDTO getUser(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
         log.info("Fetching user with ID: {}", id);
+
         User user = userService.getUserById(id);
-        return UserMapper.toDTO(user);
+        if (user == null) {
+            throw new UserNotFoundException("User with ID " + id + " not found");
+        }
+
+        return ResponseEntity.ok(UserMapper.toDTO(user));
     }
 
     /**
@@ -85,10 +98,16 @@ public class UserController {
      */
     @PutMapping("/{id}")
     @Operation(summary = "Update user information (Admin only)")
-    public UserDTO updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody User user) {
         log.info("Updating user with ID: {}", id);
+
+        User existingUser = userService.getUserById(id);
+        if (existingUser == null) {
+            throw new UserNotFoundException("Cannot update. User with ID " + id + " not found");
+        }
+
         User updatedUser = userService.updateUser(id, user);
-        return UserMapper.toDTO(updatedUser);
+        return ResponseEntity.ok(UserMapper.toDTO(updatedUser));
     }
 
     /**
@@ -98,9 +117,16 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete user by ID (Admin only)")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         log.warn("Deleting user with ID: {}", id);
+
+        User user = userService.getUserById(id);
+        if (user == null) {
+            throw new UserNotFoundException("Cannot delete. User with ID " + id + " not found");
+        }
+
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -111,14 +137,18 @@ public class UserController {
      */
     @GetMapping("/role/{role}")
     @Operation(summary = "Get users by role (Admin only)")
-    public List<UserDTO> getUsersByRole(@PathVariable String role) {
+    public ResponseEntity<List<UserDTO>> getUsersByRole(@PathVariable String role) {
         log.info("Fetching users by role: {}", role);
-        return userService.getUsersByRole(Role.valueOf(role))
-                .stream()
-                .map(UserMapper::toDTO)
-                .toList();
+        try {
+            Role parsedRole = Role.valueOf(role.toUpperCase());
+            return ResponseEntity.ok(userService.getUsersByRole(parsedRole)
+                    .stream()
+                    .map(UserMapper::toDTO)
+                    .toList());
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidRoleException("Invalid role: " + role);
+        }
     }
-
 
     /**
      * API to fetch the currently logged-in user's profile details.
@@ -134,10 +164,10 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<User> getMyDetails(Authentication authentication) {
         String username = authentication.getName(); // Get the username of the logged-in user
+        log.info("Fetching profile for logged-in user: {}", username);
 
-        Optional<User> user = userService.findByUsername(username);
-
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return userService.findByUsername(username)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new UserNotFoundException("User with username '" + username + "' not found"));
     }
 }

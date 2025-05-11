@@ -11,6 +11,9 @@ import com.company.loan_management.model.User;
 import com.company.loan_management.service.LoanRequestService;
 import com.company.loan_management.service.LoanService;
 import com.company.loan_management.service.UserService;
+import com.company.loan_management.exception.LoanNotFoundException;
+import com.company.loan_management.exception.UserNotFoundException;
+import com.company.loan_management.exception.InvalidLoanRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,9 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Controller to handle Loan Request related operations
@@ -45,7 +48,7 @@ public class LoanRequestController {
      */
     @Operation(summary = "Apply for a loan", description = "User applies for a loan by providing Details.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Loan request created successfully"),
+            @ApiResponse(responseCode = "201", description = "Loan request created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     @PostMapping("/apply")
@@ -56,38 +59,37 @@ public class LoanRequestController {
 
         // Ensure that the user exists
         if (user.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException("User not found with username: " + loanRequestDto.getUsername());
         }
 
         // Ensure that the loan type exists
         if (loan.isEmpty()) {
-            throw new RuntimeException("Loan type not found");
+            throw new LoanNotFoundException("Loan type not found: " + loanRequestDto.getLoanType());
         }
 
-        // Create a new LoanRequest entity and set its fields
-        LoanRequest loanRequest = new LoanRequest();
-        loanRequest.setUser(user.get());
-        loanRequest.setLoan(loan.get());
-        loanRequest.setRequestedAmount(loanRequestDto.getRequestedAmount());
-
-        log.info("User {} applying for {} Loan", user.get().getUsername(), loan.get().getLoanType());
-
         // Validate that the requested loan amount is not greater than the maximum allowed amount for this loan type
-        if (loanRequest.getRequestedAmount() > loan.get().getMaxAmount()) {
-            throw new RuntimeException("Requested loan amount exceeds the maximum allowed amount for this loan type");
+        if (loanRequestDto.getRequestedAmount() > loan.get().getMaxAmount()) {
+            throw new InvalidLoanRequestException("Requested loan amount exceeds the maximum allowed amount.");
         }
 
         try {
-            // Process the loan request
-            LoanRequest savedLoanRequest = loanRequestService.applyForLoan(user.get().getId(), loanRequest.getLoan(),loanRequestDto.getRequestedAmount());
+            // Create and process the loan request
+            LoanRequest loanRequest = new LoanRequest();
+            loanRequest.setUser(user.get());
+            loanRequest.setLoan(loan.get());
+            loanRequest.setRequestedAmount(loanRequestDto.getRequestedAmount());
+
+            LoanRequest savedLoanRequest = loanRequestService.applyForLoan(user.get().getId(), loanRequest.getLoan(), loanRequestDto.getRequestedAmount());
 
             // Map the saved entity to the UserLoanRequestDTO
             UserLoanRequestDTO responseDto = UserLoanRequestMapper.toDTO(savedLoanRequest);
 
             // Return success response with the loan request details
-            return ResponseEntity.ok(responseDto);
+            URI location = URI.create("/api/loan-requests/" + savedLoanRequest.getId());
+            return ResponseEntity.created(location).body(responseDto);
         } catch (Exception e) {
-            throw new RuntimeException("Something Went Wrong");
+            log.error("Error applying for loan: {}", e.getMessage(), e);
+            throw new InvalidLoanRequestException("Something went wrong while processing the loan request.");
         }
     }
 
@@ -107,7 +109,7 @@ public class LoanRequestController {
 
         // Check if the user exists before proceeding
         if (userOpt.isPresent()) {
-            log.info("User {} attempting to cancel loan request {}", userOpt.get().getId(), requestId);
+            log.info("User {} attempting to cancel loan request {}", username, requestId);
 
             try {
                 // Proceed to cancel the loan request
@@ -119,10 +121,11 @@ public class LoanRequestController {
                 // Return success response with the canceled loan request details
                 return ResponseEntity.ok(responseDto);
             } catch (Exception e) {
-                throw new RuntimeException("Something Went Wrong");
+                log.error("Error canceling loan request: {}", e.getMessage(), e);
+                throw new InvalidLoanRequestException("Something went wrong while canceling the loan request.");
             }
         } else {
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException("User not found with username: " + username);
         }
     }
 
@@ -138,7 +141,7 @@ public class LoanRequestController {
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/user/{userId}")
-    public List<UserLoanRequestDTO> getUserLoanRequests(
+    public ResponseEntity<List<UserLoanRequestDTO>> getUserLoanRequests(
             @PathVariable Long userId,
             @RequestParam(required = false) String status) {
         log.info("User {} fetching their loan requests, status filter: {}", userId, status);
@@ -149,7 +152,7 @@ public class LoanRequestController {
         // Map loan requests to UserLoanRequestDTO, ensuring no sensitive data is exposed
         // Exposing only username, not sensitive user data
 
-        return loanRequests.stream()
+        return ResponseEntity.ok(loanRequests.stream()
                 .map(loanRequest -> UserLoanRequestDTO.builder()
                         .id(loanRequest.getId())
                         .username(loanRequest.getUser().getUsername()) // Exposing only username, not sensitive user data
@@ -157,7 +160,7 @@ public class LoanRequestController {
                         .status(loanRequest.getStatus())
                         .requestedAmount(loanRequest.getRequestedAmount())
                         .build())
-                .collect(Collectors.toList());
+                .toList());
     }
 
 
@@ -172,16 +175,16 @@ public class LoanRequestController {
     })
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/manager/{managerId}")
-    public List<ManagerLoanRequestDTO> getManagerLoanRequests(
+    public ResponseEntity<List<ManagerLoanRequestDTO>> getManagerLoanRequests(
             @PathVariable Long managerId,
             @RequestParam(required = false) String status) {
         log.info("Manager {} fetching assigned loan requests, status filter: {}", managerId, status);
         List<LoanRequest> loanRequests = loanRequestService.getLoanRequestsAssignedToManager(managerId, status);
         // Map LoanRequest entities to ManagerLoanRequestDTOs
 
-        return loanRequests.stream()
+        return ResponseEntity.ok(loanRequests.stream()
                 .map(ManagerLoanRequestMapper::toDTO)
-                .toList();
+                .toList());
 
         
     }
