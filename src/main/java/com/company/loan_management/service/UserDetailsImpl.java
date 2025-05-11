@@ -37,7 +37,7 @@ public class UserDetailsImpl implements UserDetails {
         this.username = user.getUsername();
         this.password = user.getPassword();
         // Creating a GrantedAuthority from the user's role
-        // Creating a GrantedAuthority from the user's role
+
 
         List<GrantedAuthority> authorityList = new ArrayList<>();
 
