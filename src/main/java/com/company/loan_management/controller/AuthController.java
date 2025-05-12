@@ -7,9 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -47,8 +50,14 @@ public class AuthController {
         String token = jwtUtil.generateToken(authentication.getName());
         logger.info("Authentication successful for username: {}", loginRequestDTO.getUsername());
 
+        // Extract roles from the authenticated principal
+        List<String> roles = authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
         // Fetch user details
-        LoginResponseDTO response = new LoginResponseDTO(token, loginRequestDTO.getUsername());
+        LoginResponseDTO response = new LoginResponseDTO(token, loginRequestDTO.getUsername(),roles);
 
         return ResponseEntity.ok(response);
     }
