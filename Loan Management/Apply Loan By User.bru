@@ -1,0 +1,24 @@
+meta {
+  name: Apply Loan By User
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/api/loan-requests/apply
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTc0NjM0MTY2MSwiZXhwIjo3NTI4MDY3NTk0MTY3MzQ1fQ.a97NcBg8-ArZVlLypR8vFSuNtjlwJtqP3uQxzkr-TCs
+}
+
+body:json {
+  {
+      "username":"john_doe",
+      "loanType":"Car Loan",
+      "requestedAmount": 50000.00
+  }
+  
+}

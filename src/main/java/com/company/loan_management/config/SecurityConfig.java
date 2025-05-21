@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -68,9 +69,11 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v2/api-docs/**",
                                 "/swagger-resources/**",
-                                "/webjars/**").permitAll() // Allow login/register
+                                "/webjars/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/loans","/api/repayments").authenticated()// Allow login/register
                         .requestMatchers("/api/loans","/api/loan-requests/apply/**","/api/loan-requests/cancel/**","/api/users/me").hasRole("USER")
-                        .requestMatchers("/api/users/**","/api/loans","/api/loans/**").hasRole("ADMIN") // Only allow admin access to /admin/**
+                        .requestMatchers("/api/users/**","/api/loans/**").hasRole("ADMIN")
+                        .requestMatchers("/api/loans").hasRole("USER")// Only allow admin access to /admin/**
                         .requestMatchers("/api/loan-requests/manager/**").hasRole("MANAGER")
                         .anyRequest().authenticated() // Secure all other endpoints
         );

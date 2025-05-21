@@ -3,6 +3,7 @@ package com.company.loan_management.controller;
 import com.company.loan_management.dto.LoginRequestDTO;
 import com.company.loan_management.dto.LoginResponseDTO;
 import com.company.loan_management.jwt.JwtUtil;
+import com.company.loan_management.service.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,7 +58,9 @@ public class AuthController {
                 .toList();
 
         // Fetch user details
-        LoginResponseDTO response = new LoginResponseDTO(token, loginRequestDTO.getUsername(),roles);
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        LoginResponseDTO response = new LoginResponseDTO(token,userDetails.getUser().getId(), loginRequestDTO.getUsername(),roles);
 
         return ResponseEntity.ok(response);
     }

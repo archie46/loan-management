@@ -1,0 +1,28 @@
+meta {
+  name: Create Loan
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/loans
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0NjMzODY5MCwiZXhwIjo3NTI3OTYwNjQ4Nzg3MzQ1fQ.xG0fwQ-G8m7lyo-VRvoAm3r0Cq23MJvRTlXxpu52w7c
+}
+
+body:json {
+  {
+    "loanType": "Home",
+    "maxAmount": 500000.00,
+    "interestRate": 3.5,
+    "approverManager": {
+      "id": 1
+    },
+    "durationMonths": 240
+  }
+  
+}
