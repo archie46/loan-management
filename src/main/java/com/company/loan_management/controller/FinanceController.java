@@ -1,8 +1,13 @@
 package com.company.loan_management.controller;
 
 import com.company.loan_management.dto.LoanRepaymentDTO;
+import com.company.loan_management.dto.ManagerLoanRequestDTO;
+import com.company.loan_management.dto.UserLoanRequestDTO;
 import com.company.loan_management.mapper.LoanRepaymentMapper;
+import com.company.loan_management.mapper.ManagerLoanRequestMapper;
+import com.company.loan_management.model.LoanRequest;
 import com.company.loan_management.service.LoanRepaymentService;
+import com.company.loan_management.service.LoanRequestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +30,7 @@ import java.util.List;
 public class FinanceController {
 
     private final LoanRepaymentService loanRepaymentService;
+    private final LoanRequestService loanRequestService;
 
     /**
      * Disburses a loan and generates the repayment schedule.
@@ -67,5 +73,21 @@ public class FinanceController {
         log.info("Marking repayment as PAID for RepaymentId: {}", repaymentId);
         loanRepaymentService.markAsPaid(repaymentId);
         return ResponseEntity.ok("Repayment marked as PAID.");
+    }
+
+    @GetMapping("/loanRequests")
+    public ResponseEntity<List<ManagerLoanRequestDTO>> getLoanRequests(
+            @RequestParam(required = false) String status) {
+        log.info("Finance Department fetching their loan requests, status filter: {}", status);
+
+        // Fetch loan requests by user ID with an optional status filter
+        List<LoanRequest> loanRequests = loanRequestService.getApprovedLoansForDisbursal(status);
+
+        // Map loan requests to UserLoanRequestDTO, ensuring no sensitive data is exposed
+        // Exposing only username, not sensitive user data
+
+        return ResponseEntity.ok(loanRequests.stream()
+                .map(ManagerLoanRequestMapper::toDTO)
+                .toList());
     }
 }

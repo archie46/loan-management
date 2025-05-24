@@ -4,8 +4,15 @@ meta {
   seq: 9
 }
 
-get {
-  url: 
-  body: none
+post {
+  url: http://localhost:8080/api/auth/login
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "username":"jane_manager",
+    "password":"password"
+  }
 }

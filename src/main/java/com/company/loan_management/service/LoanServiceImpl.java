@@ -74,10 +74,19 @@ public class LoanServiceImpl implements LoanService {
         log.info("Updating loan ID {} with new data: {}", id, loan);
         Loan existing = getLoanById(id); // throws LoanNotFoundException
 
-        existing.setLoanType(loan.getLoanType());
-        existing.setMaxAmount(loan.getMaxAmount());
-        existing.setInterestRate(loan.getInterestRate());
-        existing.setDurationMonths(loan.getDurationMonths());
+        if (loan.getLoanType() != null) {
+            existing.setLoanType(loan.getLoanType());
+        }
+        if (loan.getMaxAmount() != null) {
+            existing.setMaxAmount(loan.getMaxAmount());
+        }
+        if (loan.getInterestRate() != null) {
+            existing.setInterestRate(loan.getInterestRate());
+        }
+        if (loan.getDurationMonths() != null) {
+            existing.setDurationMonths(loan.getDurationMonths());
+        }
+
 
         Loan updated = loanRepository.save(existing);
         log.info("Loan updated successfully: {}", updated.getLoanType());

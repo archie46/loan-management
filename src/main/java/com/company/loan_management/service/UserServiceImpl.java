@@ -108,13 +108,27 @@ public class UserServiceImpl implements UserService {
         try {
             logger.info("Updating user with ID: {}", id);
             return userRepository.findById(id).map(existingUser -> {
-                existingUser.setName(updatedUser.getName());
-                existingUser.setEmail(updatedUser.getEmail());
-                existingUser.setSalary(updatedUser.getSalary());
-                existingUser.setBankAccountNumber(updatedUser.getBankAccountNumber());
-                existingUser.setDepartment(updatedUser.getDepartment());
-                existingUser.setRole(updatedUser.getRole());
-                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                if (updatedUser.getName() != null) {
+                    existingUser.setName(updatedUser.getName());
+                }
+                if (updatedUser.getEmail() != null) {
+                    existingUser.setEmail(updatedUser.getEmail());
+                }
+                if (updatedUser.getSalary() != null) {
+                    existingUser.setSalary(updatedUser.getSalary());
+                }
+                if (updatedUser.getBankAccountNumber() != null) {
+                    existingUser.setBankAccountNumber(updatedUser.getBankAccountNumber());
+                }
+                if (updatedUser.getDepartment() != null) {
+                    existingUser.setDepartment(updatedUser.getDepartment());
+                }
+                if (updatedUser.getRole() != null) {
+                    existingUser.setRole(updatedUser.getRole());
+                }
+                if (updatedUser.getPassword() != null) {
+                    existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                }
                 logger.info("User updated successfully with ID: {}", id);
                 return userRepository.save(existingUser);
             }).orElseThrow(() -> {

@@ -75,6 +75,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**","/api/loans/**").hasRole("ADMIN")
                         .requestMatchers("/api/loans").hasRole("USER")// Only allow admin access to /admin/**
                         .requestMatchers("/api/loan-requests/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/api/finance/**").hasRole("FINANCE")
                         .anyRequest().authenticated() // Secure all other endpoints
         );
 

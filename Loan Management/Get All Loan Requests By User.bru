@@ -5,11 +5,15 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/api/loan-requests/user/2
+  url: http://localhost:8080/api/loan-requests/user/2?status=APPROVED
   body: none
   auth: bearer
 }
 
+params:query {
+  status: APPROVED
+}
+
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTc0NjM0MTY2MSwiZXhwIjo3NTI4MDY3NTk0MTY3MzQ1fQ.a97NcBg8-ArZVlLypR8vFSuNtjlwJtqP3uQxzkr-TCs
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTc0Nzg0ODQ4MSwiZXhwIjo3NTgyMzEzMTE2Nzk1MzQ1fQ.ayvz0KOmfP7_0-xYCre72o4HcAx4U6-t_zsVA0q0aWc
 }

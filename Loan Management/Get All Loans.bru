@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: 
+  url: http://localhost:8080/api/loans
   body: none
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTc0Nzg0NzQzOCwiZXhwIjo3NTgyMjc1NTc3MTExMzQ1fQ.cqAQGyqW-Zupuns3rJ4XMc70MhqSnA0rQNDpDNRv-FQ
 }
