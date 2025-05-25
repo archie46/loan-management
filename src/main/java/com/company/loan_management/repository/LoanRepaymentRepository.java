@@ -9,4 +9,6 @@ public interface LoanRepaymentRepository extends JpaRepository<LoanRepayment, Lo
     List<LoanRepayment> findByLoanRequestId(Long requestId);
 
     List<LoanRepayment> findByLoanRequestUserId(Long userId);
+    List<LoanRepayment> findByLoanRequestUserIdAndStatus(Long userId, String status);
+
 }

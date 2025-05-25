@@ -5,6 +5,7 @@ import com.company.loan_management.dto.ManagerLoanRequestDTO;
 import com.company.loan_management.dto.UserLoanRequestDTO;
 import com.company.loan_management.mapper.LoanRepaymentMapper;
 import com.company.loan_management.mapper.ManagerLoanRequestMapper;
+import com.company.loan_management.model.LoanRepayment;
 import com.company.loan_management.model.LoanRequest;
 import com.company.loan_management.service.LoanRepaymentService;
 import com.company.loan_management.service.LoanRequestService;
@@ -42,6 +43,7 @@ public class FinanceController {
     @PreAuthorize("hasRole('FINANCE')")
     public ResponseEntity<String> disburseLoan(@PathVariable Long loanRequestId) {
         log.info("Disbursing loan and generating schedule for LoanRequestId: {}", loanRequestId);
+        loanRequestService.disburseLoan(loanRequestId);
         loanRepaymentService.generateRepayments(loanRequestId);
         return ResponseEntity.ok("Loan disbursed and repayment schedule generated.");
     }
@@ -83,6 +85,7 @@ public class FinanceController {
         // Fetch loan requests by user ID with an optional status filter
         List<LoanRequest> loanRequests = loanRequestService.getApprovedLoansForDisbursal(status);
 
+
         // Map loan requests to UserLoanRequestDTO, ensuring no sensitive data is exposed
         // Exposing only username, not sensitive user data
 
@@ -90,4 +93,22 @@ public class FinanceController {
                 .map(ManagerLoanRequestMapper::toDTO)
                 .toList());
     }
+
+    @GetMapping("/loanRepayments")
+    public ResponseEntity<List<LoanRepaymentDTO>> getLoanRepayments(@RequestParam(required = true) Long userId,
+            @RequestParam(required = false) String status) {
+        log.info("User fetching their loan repayments, status filter: {}", status);
+
+        // Fetch loan requests by user ID with an optional status filter
+        List<LoanRepayment> loanRepayments = loanRepaymentService.getRepaymentsByUser(userId,status);
+
+        // Map loan requests to UserLoanRequestDTO, ensuring no sensitive data is exposed
+        // Exposing only username, not sensitive user data
+
+        return ResponseEntity.ok(loanRepayments.stream()
+                .map(LoanRepaymentMapper::toDTO)
+                .toList());
+    }
+
+
 }

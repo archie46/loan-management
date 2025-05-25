@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -133,11 +134,19 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     @Override
     public List<LoanRequest> getApprovedLoansForDisbursal(String statusFilter) {
         log.info("Fetching loans ready for disbursal, status filter: {}", statusFilter);
+
+        List<LoanRequest> result = new ArrayList<>();
+
         if (statusFilter == null || statusFilter.isEmpty()) {
-            return loanRequestRepository.findByStatus("APPROVED");
+            result.addAll(loanRequestRepository.findByStatus("APPROVED"));
+            result.addAll(loanRequestRepository.findByStatus("DISBURSED"));
+            return result;
         }
-        return loanRequestRepository.findByStatus(statusFilter);
+
+        result.addAll(loanRequestRepository.findByStatus(statusFilter));
+        return result;
     }
+
 
     /**
      * Finance department disburses an approved loan.
@@ -153,6 +162,7 @@ public class LoanRequestServiceImpl implements LoanRequestService {
         }
 
         request.setStatus("DISBURSED");
+        request.setDisbursementDate(LocalDate.now());
         // You can also update user's accountBalance here separately in a transaction
 
         return loanRequestRepository.save(request);

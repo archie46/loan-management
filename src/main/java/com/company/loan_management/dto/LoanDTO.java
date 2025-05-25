@@ -1,5 +1,6 @@
 package com.company.loan_management.dto;
 
+import com.company.loan_management.model.User;
 import lombok.*;
 
 /**
@@ -26,4 +27,6 @@ public class LoanDTO {
 
     /** The duration (in months) for repayment of the loan */
     private Integer durationMonths;
+
+    private ManagerDTO approverManager;
 }

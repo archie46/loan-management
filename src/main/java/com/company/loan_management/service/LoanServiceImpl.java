@@ -2,7 +2,10 @@ package com.company.loan_management.service;
 
 import com.company.loan_management.exception.LoanNotFoundException;
 import com.company.loan_management.model.Loan;
+import com.company.loan_management.model.User;
 import com.company.loan_management.repository.LoanRepository;
+import com.company.loan_management.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class LoanServiceImpl implements LoanService {
 
     private final LoanRepository loanRepository;
+    private final UserRepository userRepository;
 
     /**
      * Create a new loan type. Prevents duplicates based on loanType.
@@ -30,13 +34,34 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Loan createLoan(Loan loan) {
         log.info("Attempting to create loan type: {}", loan.getLoanType());
+
+        // Check for duplicate loan type
         loanRepository.findByLoanType(loan.getLoanType()).ifPresent(existing -> {
             throw new IllegalArgumentException("Loan type already exists: " + loan.getLoanType());
         });
+
+// Ensure approverManager is fully loaded from DB and has role MANAGER
+        if (loan.getApproverManager() != null && loan.getApproverManager().getId() != null) {
+            Long managerId = loan.getApproverManager().getId();
+            User manager = userRepository.findById(managerId)
+                    .orElseThrow(() -> new EntityNotFoundException("Manager not found with ID: " + managerId));
+
+            if (!"MANAGER".equalsIgnoreCase(String.valueOf(manager.getRole()))) {
+                throw new IllegalArgumentException("User with ID " + managerId + " is not a manager");
+            }
+
+            loan.setApproverManager(manager);
+        } else {
+            throw new IllegalArgumentException("Approver manager is required");
+        }
+
+
+        // Save the loan
         Loan saved = loanRepository.save(loan);
         log.info("Loan type created successfully: {}", saved.getLoanType());
         return saved;
     }
+
 
     /**
      * Get all available loan types.
@@ -85,6 +110,9 @@ public class LoanServiceImpl implements LoanService {
         }
         if (loan.getDurationMonths() != null) {
             existing.setDurationMonths(loan.getDurationMonths());
+        }
+        if(loan.getApproverManager() != null){
+            existing.setApproverManager(loan.getApproverManager());
         }
 
 

@@ -70,7 +70,7 @@ public class SecurityConfig {
                                 "/v2/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/loans","/api/repayments").authenticated()// Allow login/register
+                        .requestMatchers(HttpMethod.GET, "/api/loans","/api/finance/loanRepayments").authenticated()// Allow login/register
                         .requestMatchers("/api/loans","/api/loan-requests/apply/**","/api/loan-requests/cancel/**","/api/users/me").hasRole("USER")
                         .requestMatchers("/api/users/**","/api/loans/**").hasRole("ADMIN")
                         .requestMatchers("/api/loans").hasRole("USER")// Only allow admin access to /admin/**

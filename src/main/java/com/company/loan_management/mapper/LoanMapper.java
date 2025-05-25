@@ -1,6 +1,7 @@
 package com.company.loan_management.mapper;
 
 import com.company.loan_management.dto.LoanDTO;
+import com.company.loan_management.dto.ManagerDTO;
 import com.company.loan_management.model.Loan;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +27,7 @@ public class LoanMapper {
                 .maxAmount(loan.getMaxAmount())
                 .interestRate(loan.getInterestRate())
                 .durationMonths(loan.getDurationMonths())
+                .approverManager(UserMapper.toManagerDTO(loan.getApproverManager()))
                 .build();
     }
 

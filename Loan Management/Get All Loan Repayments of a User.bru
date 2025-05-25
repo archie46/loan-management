@@ -1,0 +1,16 @@
+meta {
+  name: Get All Loan Repayments of a User
+  type: http
+  seq: 11
+}
+
+get {
+  url: http://localhost:8080/api/finance/loanRepayments?userId=1
+  body: none
+  auth: bearer
+}
+
+params:query {
+  userId: 1
+  ~status: 
+}

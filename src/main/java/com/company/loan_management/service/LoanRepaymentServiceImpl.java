@@ -112,9 +112,13 @@ public class LoanRepaymentServiceImpl implements LoanRepaymentService {
      * @return List of LoanRepayment entities
      */
     @Override
-    public List<LoanRepayment> getRepaymentsByUser(Long userId) {
+    public List<LoanRepayment> getRepaymentsByUser(Long userId,String status) {
         log.info("Fetching repayments for User ID: {}", userId);
-        return repaymentRepository.findByLoanRequestUserId(userId);
+        if (status == null) {
+            return repaymentRepository.findByLoanRequestUserId(userId);
+        } else {
+            return repaymentRepository.findByLoanRequestUserIdAndStatus(userId, status);
+        }
     }
 
     // Private helper method to calculate EMI

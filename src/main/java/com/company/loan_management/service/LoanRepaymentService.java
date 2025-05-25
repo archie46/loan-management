@@ -16,5 +16,5 @@ public interface LoanRepaymentService {
     void markAsPaid(Long repaymentId);
 
     // (NEW) Get all repayments for a user across loans
-    List<LoanRepayment> getRepaymentsByUser(Long userId);
+    List<LoanRepayment> getRepaymentsByUser(Long userId,String status);
 }

@@ -48,6 +48,11 @@ public class UserDTO {
     private String bankAccountNumber;
 
     /**
+     * Account Balance of the user.
+     */
+    private Double accountBalance;
+
+    /**
      * Department to which the user belongs.
      */
     private String department;

@@ -33,6 +33,7 @@ public class UserMapper {
                 .role(user.getRole().name())
                 .salary(user.getSalary())
                 .bankAccountNumber(user.getBankAccountNumber())
+                .accountBalance(user.getAccountBalance())
                 .department(user.getDepartment())
                 .build();
 
