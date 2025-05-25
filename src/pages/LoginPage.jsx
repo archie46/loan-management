@@ -31,54 +31,88 @@ const LoginPage = () => {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError('Invalid credentials'+err);
+      setError('Invalid credentials. Please try again.');
     }
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left Side Section */}
-      <div className="w-1/2 flex flex-col justify-center items-center p-20 bg-gradient-to-b from-[#E6F2FF] via-white to-[#E6F2FF]">
-        <h1 className="text-4xl font-semibold mb-3 text-navy">
+    <div className="flex flex-col md:flex-row min-h-screen font-sans bg-gray-50">
+      {/* Left Side Section with branding and info */}
+      <div className="md:w-1/2 flex flex-col justify-center items-center p-12 bg-gradient-to-b from-blue-100 via-white to-blue-100">
+        <h1 className="text-4xl font-extrabold mb-4 text-blue-900 leading-tight text-center">
           Loan<br /> Management <br /> App
         </h1>
-        <p className="text-lg text-[#3399cc]">
+        <p className="text-lg text-blue-700 text-center max-w-sm">
           Easily manage and track employee loan applications in one place.
         </p>
       </div>
 
-      {/* Right Side Section */}
-      <div className="w-1/2 flex flex-col justify-center items-center bg-white text-dark p-20">
-        <h2 className="text-2xl font-semibold mb-6">Login</h2>
-        {error && <div className="alert alert-danger w-full mb-4 p-3 bg-red-500 text-white rounded-md">{error}</div>}
+      {/* Right Side Section with login form */}
+      <div className="md:w-1/2 flex flex-col justify-center items-center p-12 bg-white shadow-lg">
+        <h2 className="text-3xl font-semibold mb-8 text-gray-800">Login</h2>
 
-        <div className="p-6 rounded-4xl shadow-lg w-full max-w-xs">
-          <form onSubmit={handleLogin}>
-            <div className="mb-4">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
+        {/* Error message */}
+        {error && (
+          <div
+            role="alert"
+            className="w-full max-w-xs mb-6 p-3 bg-red-500 text-white rounded-md text-center font-medium"
+          >
+            {error}
+          </div>
+        )}
+
+        <div className="w-full max-w-xs">
+          <form onSubmit={handleLogin} noValidate>
+            {/* Username Field */}
+            <div className="mb-6">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Username
+              </label>
               <input
                 type="text"
-                className="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#3399cc] focus:border-[#3399cc]"
                 id="username"
+                name="username"
+                autoComplete="username"
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm 
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
-            <div className="mb-4">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+
+            {/* Password Field */}
+            <div className="mb-8">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
               <input
                 type="password"
-                className="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#3399cc] focus:border-[#3399cc]"
                 id="password"
+                name="password"
+                autoComplete="current-password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm 
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
-            <button type="submit" className="w-full py-2 px-4 bg-[#003366] text-white font-semibold rounded-md hover:bg-[#002244] transition">
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full py-3 bg-blue-800 text-white font-semibold rounded-md 
+                hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
+            >
               Login
             </button>
           </form>

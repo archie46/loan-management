@@ -4,15 +4,14 @@ import { getLoans, applyForLoan } from "../api/auth";
 function LoanForm({ onClose, onSuccess }) {
   const [loanTypes, setLoanTypes] = useState([]);
   const [expandedLoanId, setExpandedLoanId] = useState(null);
-  const [applyingLoanId, setApplyingLoanId] = useState(null); // track which loan we are applying for
-  const [requestedAmount, setRequestedAmount] = useState(""); // input for requested amount
+  const [applyingLoanId, setApplyingLoanId] = useState(null);
+  const [requestedAmount, setRequestedAmount] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getLoans()
       .then((res) => {
-        console.log("Loans response:", res);
         setLoanTypes(Array.isArray(res) ? res : []);
       })
       .catch((err) => {
@@ -23,11 +22,15 @@ function LoanForm({ onClose, onSuccess }) {
 
   const toggleExpand = (id) => {
     setExpandedLoanId(expandedLoanId === id ? null : id);
-    // reset applying state if user collapses or switches loan
     setApplyingLoanId(null);
     setRequestedAmount("");
     setError(null);
   };
+
+  const formatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  }); 
 
   const startApplying = (id) => {
     setApplyingLoanId(id);
@@ -39,84 +42,84 @@ function LoanForm({ onClose, onSuccess }) {
     const username = localStorage.getItem("username");
     const amount = parseFloat(requestedAmount);
 
-    if (!username) {
-      setError("User not logged in.");
-      return;
-    }
-    if (isNaN(amount) || amount <= 0) {
-      setError("Please enter a valid amount.");
-      return;
-    }
-    if (amount > loanTypeObj.maxAmount) {
-      setError(`Requested amount cannot exceed max amount: $${loanTypeObj.maxAmount}`);
-      return;
-    }
+    if (!username) return setError("User not logged in.");
+    if (isNaN(amount) || amount <= 0) return setError("Please enter a valid amount.");
+    if (amount > loanTypeObj.maxAmount)
+      return setError(`Amount cannot exceed $${loanTypeObj.maxAmount}`);
 
-    setLoading(true);
-    setError(null);
     try {
+      setLoading(true);
       await applyForLoan({
         username,
         loanType: loanTypeObj.loanType,
         requestedAmount: amount,
       });
-      setLoading(false);
       setApplyingLoanId(null);
       setRequestedAmount("");
+      setError(null);
       if (onSuccess) onSuccess();
     } catch (e) {
-      setLoading(false);
       setError("Failed to apply for loan. Please try again.");
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Available Loan Types</h2>
-      <div className="space-y-4">
-        {loanTypes.map((loanType) => (
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Available Loan Types</h2>
+
+      <div className="space-y-5">
+        {loanTypes.map((loan) => (
           <div
-            key={loanType.id}
-            className="border rounded p-4 shadow hover:shadow-lg transition duration-200"
+            key={loan.id}
+            className="rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition"
           >
             <div
               className="flex justify-between items-center cursor-pointer"
-              onClick={() => toggleExpand(loanType.id)}
+              onClick={() => toggleExpand(loan.id)}
             >
-              <h3 className="text-xl font-semibold">{loanType.loanType}</h3>
-              <button className="text-blue-600 underline">
-                {expandedLoanId === loanType.id ? "Hide" : "View Details"}
+              <h3 className="text-xl font-semibold text-gray-700">{loan.loanType}</h3>
+              <button className="text-blue-600 hover:underline text-sm">
+                {expandedLoanId === loan.id ? "Hide Details" : "View Details"}
               </button>
             </div>
 
-            {expandedLoanId === loanType.id && (
-              <div className="mt-4 space-y-2">
-                <p><strong>Max Amount:</strong> formatter.format({loanType.maxAmount})</p>
-                <p><strong>Interest Rate:</strong> {loanType.interestRate}%</p>
-                <p><strong>Duration:</strong> {loanType.durationMonths} months</p>
+            {expandedLoanId === loan.id && (
+              <div className="mt-4 text-gray-600 space-y-3">
+                <p>
+                  <strong>Max Amount:</strong> {formatter.format(loan.maxAmount)}
+                </p>
+                <p>
+                  <strong>Interest Rate:</strong> {loan.interestRate}%
+                </p>
+                <p>
+                  <strong>Duration:</strong> {loan.durationMonths} months
+                </p>
 
-                {applyingLoanId === loanType.id ? (
-                  <>
+                {applyingLoanId === loan.id ? (
+                  <div className="mt-4 space-y-3">
                     <input
                       type="number"
                       min="0"
-                      max={loanType.maxAmount}
+                      max={loan.maxAmount}
                       step="0.01"
-                      placeholder="Enter amount"
-                      className="border p-2 rounded w-full mt-2"
+                      placeholder="Enter requested amount"
+                      className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       value={requestedAmount}
                       onChange={(e) => setRequestedAmount(e.target.value)}
                       disabled={loading}
                     />
-                    {error && <p className="text-red-600 mt-1">{error}</p>}
-                    <div className="flex space-x-2 mt-2">
+                    {error && <p className="text-sm text-red-600">{error}</p>}
+
+                    <div className="flex space-x-3">
                       <button
-                        onClick={() => handleApplySubmit(loanType)}
-                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                        onClick={() => handleApplySubmit(loan)}
                         disabled={loading}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
                       >
-                        {loading ? "Applying..." : "Send"}
+                        {loading ? "Applying..." : "Send Application"}
                       </button>
                       <button
                         onClick={() => {
@@ -124,19 +127,19 @@ function LoanForm({ onClose, onSuccess }) {
                           setRequestedAmount("");
                           setError(null);
                         }}
-                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
                         disabled={loading}
                       >
                         Cancel
                       </button>
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <button
-                    className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                    onClick={() => startApplying(loanType.id)}
+                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    onClick={() => startApplying(loan.id)}
                   >
-                    Apply
+                    Apply Now
                   </button>
                 )}
               </div>
@@ -146,12 +149,12 @@ function LoanForm({ onClose, onSuccess }) {
       </div>
 
       {onClose && (
-        <div className="mt-6">
+        <div className="mt-8">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
           >
-            Cancel
+            Close
           </button>
         </div>
       )}

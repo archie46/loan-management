@@ -3,49 +3,51 @@ import Navbar from "../components/Navbar";
 import UserSidebar from "../components/UserSidebar";
 import ApplyLoanForm from "../components/ApplyLoanForm";
 import RepaymentList from "../components/RepaymentList";
-import ViewLoanRequests from "../components/ViewLoanRequests"; // Import the new component
+import ViewLoanRequests from "../components/ViewLoanRequests";
 
 function UserDashboard() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [activeTab, setActiveTab] = useState(null);
-
-  // Replace this with your actual user ID logic, e.g. from auth context or props
   const userId = localStorage.getItem("userId");
 
+
+
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-gray-100">
       <Navbar onToggleSidebar={() => setIsSidebarVisible(!isSidebarVisible)} />
 
       <div className="flex flex-1 overflow-hidden">
-        {isSidebarVisible && <UserSidebar setActiveTab={setActiveTab} />}
-        <main className="flex-1 p-6 bg-gray-50 overflow-y-auto">
+        {isSidebarVisible && (
+          <UserSidebar setActiveTab={setActiveTab} />
+        )}
+        <main className="flex-1 p-8 overflow-y-auto">
           {activeTab === "applyLoan" && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Apply for a Loan</h2>
+            <section>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">Apply for a Loan</h2>
               <ApplyLoanForm />
-            </div>
+            </section>
           )}
 
           {activeTab === "repayments" && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Your Repayments</h2>
+            <section>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">Your Repayments</h2>
               <RepaymentList userId={userId} />
-            </div>
+            </section>
           )}
 
           {activeTab === "viewLoanRequests" && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">View Loan Requests</h2>
+            <section>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">Loan Requests</h2>
               <ViewLoanRequests userId={userId} />
-            </div>
+            </section>
           )}
 
-          {activeTab === null && (
-            <div className="text-center py-16">
-              <h2 className="text-3xl font-bold text-gray-800 mb-3">
+          {!activeTab && (
+            <div className="text-center py-24">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
                 Welcome to Your Dashboard
               </h2>
-              <p className="text-lg text-gray-600">
+              <p className="text-gray-600 text-lg">
                 Select an option from the sidebar to get started.
               </p>
             </div>
