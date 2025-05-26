@@ -31,23 +31,30 @@ function LoanForm({ loan, onClose, onSuccess }) {
     }
   }, [loan, loanId, isEditMode]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "approverManager" ? (value ? parseInt(value) : null) : value,
-    }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]:
+      name === "approverManager"
+        ? value
+          ? managers.find((m) => String(m.id) === value) || null
+          : null
+        : value,
+  }));
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = {
-        ...formData,
-        approverManager: formData.approverManager
-          ? { id: formData.approverManager }
-          : null,
-      };
+    const payload = {
+      ...formData,
+    approverManager: formData.approverManager || null,
+    };
+      console.log("Submitting payload:", payload);
+
 
       if (isEditMode) {
         await updateLoan(loanId, payload);
@@ -136,7 +143,7 @@ function LoanForm({ loan, onClose, onSuccess }) {
           <select
             id="approverManager"
             name="approverManager"
-            value={formData.approverManager ?? ""}
+            value={formData.approverManager ? formData.approverManager.id : ""}
             onChange={handleChange}
             required={!isEditMode}
             className="mt-1 w-full p-2 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
