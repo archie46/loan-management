@@ -111,8 +111,11 @@ public class LoanServiceImpl implements LoanService {
         if (loan.getDurationMonths() != null) {
             existing.setDurationMonths(loan.getDurationMonths());
         }
-        if(loan.getApproverManager() != null){
-            existing.setApproverManager(loan.getApproverManager());
+        if (loan.getApproverManager() != null) {
+            Long managerId = loan.getApproverManager().getId();
+            User manager = userRepository.findById(managerId)
+                    .orElseThrow(() -> new EntityNotFoundException("Manager not found with ID: " + managerId));
+            existing.setApproverManager(manager);
         }
 
 

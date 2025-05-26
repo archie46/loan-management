@@ -48,6 +48,7 @@ public class UserMapper {
         logger.info("Mapping User entity to ManagerDTO for user with ID: {}", user.getId());
 
         ManagerDTO managerDTO = ManagerDTO.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .department(user.getDepartment())

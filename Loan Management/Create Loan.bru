@@ -1,7 +1,7 @@
 meta {
   name: Create Loan
   type: http
-  seq: 1
+  seq: 13
 }
 
 post {
@@ -11,17 +11,17 @@ post {
 }
 
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0NjMzODY5MCwiZXhwIjo3NTI3OTYwNjQ4Nzg3MzQ1fQ.xG0fwQ-G8m7lyo-VRvoAm3r0Cq23MJvRTlXxpu52w7c
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0ODI4MzM5MywiZXhwIjo3NTk3OTY5OTI5NDI3MzQ1fQ.XvrKkXVZk3Or-YUZa4YGlX3_z6kLJsV7k7cWzJiW5Fo
 }
 
 body:json {
   {
-    "loanType": "Home",
+    "loanType": "He3",
     "maxAmount": 500000.00,
     "interestRate": 3.5,
     "approverManager": {
-      "id": 1
-    },
+      "id" : 3
+       },
     "durationMonths": 240
   }
   
