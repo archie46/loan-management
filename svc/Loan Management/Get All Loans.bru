@@ -1,0 +1,15 @@
+meta {
+  name: Get All Loans
+  type: http
+  seq: 12
+}
+
+get {
+  url: http://localhost:8080/api/loans
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0ODI4MjQ1NCwiZXhwIjo3NTk3OTM2MTM1NzU5MzQ1fQ.MweSZAuR0pEZBNRUL5Hu1R2_FA-lbwExDMKTzfc4G5E
+}

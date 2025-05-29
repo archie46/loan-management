@@ -1,0 +1,28 @@
+meta {
+  name: Create Loan
+  type: http
+  seq: 13
+}
+
+post {
+  url: http://localhost:8080/api/loans
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0ODI4MzM5MywiZXhwIjo3NTk3OTY5OTI5NDI3MzQ1fQ.XvrKkXVZk3Or-YUZa4YGlX3_z6kLJsV7k7cWzJiW5Fo
+}
+
+body:json {
+  {
+    "loanType": "He3",
+    "maxAmount": 500000.00,
+    "interestRate": 3.5,
+    "approverManager": {
+      "id" : 3
+       },
+    "durationMonths": 240
+  }
+  
+}

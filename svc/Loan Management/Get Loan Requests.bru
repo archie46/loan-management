@@ -1,0 +1,15 @@
+meta {
+  name: Get Loan Requests
+  type: http
+  seq: 10
+}
+
+get {
+  url: http://localhost:8080/api/loan-requests/manager/3
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW5lX21hbmFnZXIiLCJpYXQiOjE3NDc4NTA4NzgsImV4cCI6NzU4MjM5OTQwNTg0MzM0NX0.K_Pf6ZhlTuK9rZBrCTJGjqXgOYxPoNX3pqGIrp5-4T0
+}

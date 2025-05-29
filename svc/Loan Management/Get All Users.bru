@@ -1,0 +1,15 @@
+meta {
+  name: Get All Users
+  type: http
+  seq: 9
+}
+
+get {
+  url: http://localhost:8080/api/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0Njk2NDAzOSwiZXhwIjo3NTUwNDczMjA0MTgzMzQ1fQ.kb9K7grORhBmyV_lmot5aGHvK5oijOE_qf4Xd4I_wmU
+}
