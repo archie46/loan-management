@@ -22,6 +22,7 @@ function AdminDashBoard() {
   const [editingUser, setEditingUser] = useState(null);
   const [isLoanFormOpen, setIsLoanFormOpen] = useState(false);
   const [editingLoan, setEditingLoan] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('');
 
   /**
    * Sort handler toggles sorting direction on column click
@@ -110,132 +111,185 @@ const sortedItems = (items, keyMap) => {
         <main className="flex-1 p-8 overflow-y-auto">
           {/* USERS TAB */}
           {activeTab === "users" && (
-            <section aria-label="Users Management Section">
-              {isUserFormOpen ? (
-                <UserForm
-                  user={editingUser}
-                  onClose={() => setIsUserFormOpen(false)}
-                  onSuccess={() => {
-                    setIsUserFormOpen(false);
-                    fetchData();
-                  }}
-                />
-              ) : (
-                <>
-                  <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-3 md:space-y-0">
-                    <div className="relative w-full md:w-1/2">
-                      <input
-                        type="text"
-                        placeholder="Search users..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
-                        aria-label="Search users"
-                      />
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 select-none pointer-events-none">
-                        🔍
-                      </span>
-                    </div>
-                    <button
-                      className="px-5 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                      onClick={() => {
-                        setEditingUser(null); // For adding new user
-                        setIsUserFormOpen(true);
-                      }}
-                      aria-label="Add User"
-                    >
-                      Add User
-                    </button>
-                  </div>
+              <section aria-label="Users Management Section">
+                {isUserFormOpen ? (
+                    <UserForm
+                        user={editingUser}
+                        onClose={() => setIsUserFormOpen(false)}
+                        onSuccess={() => {
+                          setIsUserFormOpen(false);
+                          fetchData(); // Make sure fetchData considers the selectedRole
+                        }}
+                    />
+                ) : (
+                    <>
+                      <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-3 md:space-y-0">
+                        <div className="relative w-full md:w-1/2">
+                          <input
+                              type="text"
+                              placeholder="Search users..."
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                              aria-label="Search users"
+                          />
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 select-none pointer-events-none">
+              🔍
+            </span>
+                        </div>
 
-                  <table className="min-w-full bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
-                    <thead className="bg-blue-600 text-white select-none">
-                      <tr>
-                        <th
-                          onClick={() => handleSort("id")}
-                          className="cursor-pointer px-6 py-3 text-left font-semibold hover:bg-blue-700 transition"
-                          scope="col"
-                          aria-sort={
-                            sortConfig.key === "id"
-                              ? sortConfig.direction === "asc"
-                                ? "ascending"
-                                : "descending"
-                              : "none"
-                          }
-                          tabIndex={0}
-                          role="button"
-                        >
-                          ID{" "}
-                          {sortConfig.key === "id" &&
-                            (sortConfig.direction === "asc" ? "▲" : "▼")}
-                        </th>
-                        <th
-                          onClick={() => handleSort("name")}
-                          className="cursor-pointer px-6 py-3 text-left font-semibold hover:bg-blue-700 transition"
-                          scope="col"
-                          aria-sort={
-                            sortConfig.key === "name"
-                              ? sortConfig.direction === "asc"
-                                ? "ascending"
-                                : "descending"
-                              : "none"
-                          }
-                          tabIndex={0}
-                          role="button"
-                        >
-                          Name{" "}
-                          {sortConfig.key === "name" &&
-                            (sortConfig.direction === "asc" ? "▲" : "▼")}
-                        </th>
-                        <th className="px-6 py-3 text-left font-semibold" scope="col">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedItems(users, (u) => ({
-                        id: u.id.toString(),
-                        name: u.name,
-                      })).map((user, idx) => (
-                        <tr
-                          key={user.id}
-                          className={`${
-                            idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                          } hover:bg-blue-50 transition-colors`}
-                        >
-                          <td className="px-6 py-3 whitespace-nowrap">{user.id}</td>
-                          <td className="px-6 py-3 whitespace-nowrap">{user.name}</td>
-                          <td className="px-6 py-3 flex space-x-4">
-                            <button
-                              title="Edit User"
+                        {/* Role Filter Dropdown - Moved here */}
+                        <div className="flex items-center space-x-4"> {/* Added a div to group filter and add button */}
+                          <label htmlFor="roleFilter" className="sr-only">Filter by Role</label>
+                          <select
+                              id="roleFilter"
+                              value={selectedRole}
+                              onChange={(e) => setSelectedRole(e.target.value)}
+                              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                              aria-label="Filter users by role"
+                          >
+                            <option value="">All Roles</option>
+                            {/* Assuming you have a way to get all possible roles, e.g., from your data or a predefined list */}
+                            <option value="ADMIN">Admin</option>
+                            <option value="MANAGER">Manager</option>
+                            <option value="USER">User</option>
+                            <option value="FINANCE">Finance</option>
+                            {/* Add other roles as needed */}
+                          </select>
+
+                          <button
+                              className="px-5 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
                               onClick={() => {
-                                setEditingUser(user);
+                                setEditingUser(null); // For adding new user
                                 setIsUserFormOpen(true);
                               }}
-                              className="text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
-                              aria-label={`Edit user ${user.name}`}
-                            >
-                              <Pencil />
-                            </button>
-                            <button
-                              title="Delete User"
-                              onClick={async () => {
-                                await deleteUser(user.id);
-                                fetchData();
-                              }}
-                              className="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 rounded"
-                              aria-label={`Delete user ${user.name}`}
-                            >
-                              <Trash2 />
-                            </button>
-                          </td>
+                              aria-label="Add User"
+                          >
+                            Add User
+                          </button>
+                        </div>
+                      </div>
+
+                      <table className="min-w-full bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
+                        <thead className="bg-blue-600 text-white select-none">
+                        <tr>
+                          <th
+                              onClick={() => handleSort("id")}
+                              className="cursor-pointer px-6 py-3 text-left font-semibold hover:bg-blue-700 transition"
+                              scope="col"
+                              aria-sort={
+                                sortConfig.key === "id"
+                                    ? sortConfig.direction === "asc"
+                                        ? "ascending"
+                                        : "descending"
+                                    : "none"
+                              }
+                              tabIndex={0}
+                              role="button"
+                          >
+                            ID{" "}
+                            {sortConfig.key === "id" &&
+                                (sortConfig.direction === "asc" ? "▲" : "▼")}
+                          </th>
+                          <th
+                              onClick={() => handleSort("name")}
+                              className="cursor-pointer px-6 py-3 text-left font-semibold hover:bg-blue-700 transition"
+                              scope="col"
+                              aria-sort={
+                                sortConfig.key === "name"
+                                    ? sortConfig.direction === "asc"
+                                        ? "ascending"
+                                        : "descending"
+                                    : "none"
+                              }
+                              tabIndex={0}
+                              role="button"
+                          >
+                            Name{" "}
+                            {sortConfig.key === "name" &&
+                                (sortConfig.direction === "asc" ? "▲" : "▼")}
+                          </th>
+                          {/* Add Role column header */}
+                          <th
+                              onClick={() => handleSort("role")}
+                              className="cursor-pointer px-6 py-3 text-left font-semibold hover:bg-blue-700 transition"
+                              scope="col"
+                              aria-sort={
+                                sortConfig.key === "role"
+                                    ? sortConfig.direction === "asc"
+                                        ? "ascending"
+                                        : "descending"
+                                    : "none"
+                              }
+                              tabIndex={0}
+                              role="button"
+                          >
+                            Role{" "}
+                            {sortConfig.key === "role" &&
+                                (sortConfig.direction === "asc" ? "▲" : "▼")}
+                          </th>
+                          <th className="px-6 py-3 text-left font-semibold" scope="col">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </>
-              )}
-            </section>
+                        </thead>
+                        <tbody>
+                        {/* Apply filter before sorting */}
+                        {sortedItems(
+                            users.filter(user =>
+                                selectedRole === "" || user.role === selectedRole
+                            ),
+                            (u) => ({
+                              id: u.id.toString(),
+                              name: u.name,
+                              role: u.role, // Include role for sorting
+                            })
+                        ).map((user, idx) => (
+                            <tr
+                                key={user.id}
+                                className={`${
+                                    idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                } hover:bg-blue-50 transition-colors`}
+                            >
+                              <td className="px-6 py-3 whitespace-nowrap">{user.id}</td>
+                              <td className="px-6 py-3 whitespace-nowrap">{user.name}</td>
+                              <td className="px-6 py-3 whitespace-nowrap">{user.role}</td> {/* Display role */}
+                              <td className="px-6 py-3 flex space-x-4">
+                                <button
+                                    title="Edit User"
+                                    onClick={() => {
+                                      setEditingUser(user);
+                                      setIsUserFormOpen(true);
+                                    }}
+                                    className="text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
+                                    aria-label={`Edit user ${user.name}`}
+                                >
+                                  <Pencil />
+                                </button>
+                                <button
+                                    title="Delete User"
+                                    onClick={
+
+                                  async () => {
+                                      await deleteUser(user.id);
+                                      fetchData();
+                                    }}
+                                    className={`${
+                                        user.role.includes('ADMIN') ? 'hidden' : ''
+                                    } text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 rounded`}
+
+                                    aria-label={`Delete user ${user.name}`}
+                                >
+                                  <Trash2 />
+                                </button>
+                              </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                      </table>
+                    </>
+                )}
+              </section>
           )}
 
           {/* LOANS TAB */}

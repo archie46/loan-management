@@ -5,12 +5,14 @@ import AdminDashBoard from './pages/AdminDashBoard';
 import UserDashboard from './pages/UserDashBoard';
 import ManagerDashboard from './pages/ManagerDashboard';
 import FinanceDashboard from './pages/FinanceDashboard';
+import LandingPage from "./pages/LandingPage.jsx";
 
 
 function App() {
   return (
     <Router>
       <Routes>
+          <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin/*" element={<AdminDashBoard />} />
         <Route path="/dashboard/*" element={<UserDashboard />} />

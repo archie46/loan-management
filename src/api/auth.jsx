@@ -156,18 +156,6 @@ export const getLoanById = async (id) => {
   }
 };
 
-// Create a new loan
-export const createLoan = async (loanData) => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/api/loans`, loanData, {
-      headers: getAuthHeaders(),
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Failed to create loan:", error);
-    throw error;
-  }
-};
 
 // Delete loan by ID
 export const deleteLoan = async (id) => {

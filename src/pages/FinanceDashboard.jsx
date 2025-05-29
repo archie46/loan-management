@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import FinanceSidebar from "../components/FinanceSidebar";
 import { getAllLoanRequests, disburseLoan } from "../api/auth";
-import { FaBars } from "react-icons/fa";
 
 function FinanceDashboard() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -13,7 +12,6 @@ function FinanceDashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentRequest, setCurrentRequest] = useState(null);
 
-  const financeId = localStorage.getItem("userId");
 
   const currencyFormatter = new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -186,7 +184,7 @@ function FinanceDashboard() {
               {/* Modal */}
               {modalOpen && currentRequest && (
                 <div
-                  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 px-4"
+                  className="fixed inset-0 flex items-center justify-center  bg-opacity-50 backdrop-blur-sm z-50 px-4"
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby="modal-title"
