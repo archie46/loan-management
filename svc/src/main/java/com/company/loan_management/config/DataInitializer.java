@@ -28,61 +28,61 @@ public class DataInitializer {
         return args -> {
             // Create Users
             createUserIfNotExists(
-                    "admin",
-                    "Admin User",
-                    "admin@example.com",
-                    "pwd",
+                    "michael_scott",
+                    "Michael Scott",
+                    "michael@dundermifflin.com",
+                    "worldsbestboss",
                     Role.ADMIN,
-                    "1111111111",
-                    100000.0,
-                    50000.00,
+                    "5701234567",
+                    120000.0,
+                    60000.00,
                     userService
             );
 
             User defaultAdmin = createUserIfNotExists(
-                    "john_doe",
-                    "John Doe",
-                    "john@example.com",
-                    "password",
+                    "jim_halpert",
+                    "Jim Halpert",
+                    "jim@dundermifflin.com",
+                    "teapots",
                     Role.USER,
-                    "2222222222",
-                    50000.0,
-                    15000.00,
+                    "5702223333",
+                    65000.0,
+                    20000.00,
                     userService
             );
 
             User defaultManager = createUserIfNotExists(
-                    "jane_manager",
-                    "Jane Manager",
-                    "jane@example.com",
-                    "password",
+                    "dwight_schrute",
+                    "Dwight Schrute",
+                    "dwight@dundermifflin.com",
+                    "beetsbears",
                     Role.MANAGER,
-                    "3333333333",
-                    75000.0,
+                    "5703334444",
+                    80000.0,
                     30000.00,
                     userService
             );
             User anotherManager = createUserIfNotExists(
-                    "john_manager",
-                    "John Manager",
-                    "john1@example.com",
-                    "password",
+                    "andy_bernard",
+                    "Andy Bernard",
+                    "andy@dundermifflin.com",
+                    "cornellrules",
                     Role.MANAGER,
-                    "5555555555",
-                    80000.0,
-                    35000.00,
+                    "5705556666",
+                    78000.0,
+                    32000.00,
                     userService
             );
 
 
             User defaultFinance = createUserIfNotExists(
-                    "finance_guy",
-                    "Finance Guy",
-                    "finance@example.com",
-                    "password",
+                    "angela_martin",
+                    "Angela Martin",
+                    "angela@dundermifflin.com",
+                    "catsforever",
                     Role.FINANCE,
-                    "4444444444",
-                    80000.0,
+                    "5707778888",
+                    85000.0,
                     40000.00,
                     userService
             );
