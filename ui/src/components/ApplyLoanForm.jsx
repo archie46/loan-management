@@ -45,7 +45,7 @@ function LoanForm({ onClose, onSuccess }) {
     if (!username) return setError("User not logged in.");
     if (isNaN(amount) || amount <= 0) return setError("Please enter a valid amount.");
     if (amount > loanTypeObj.maxAmount)
-      return setError(`Amount cannot exceed $${loanTypeObj.maxAmount}`);
+      return setError(`Amount cannot exceed ₹${loanTypeObj.maxAmount}`);
 
     try {
       setLoading(true);
@@ -95,7 +95,8 @@ function LoanForm({ onClose, onSuccess }) {
                   <strong>Interest Rate:</strong> {loan.interestRate}%
                 </p>
                 <p>
-                  <strong>Duration:</strong> {loan.durationMonths} months
+                  <strong>Duration:</strong> {`${Math.floor(loan.durationMonths / 12)} year${Math.floor(loan.durationMonths / 12) !== 1 ? 's' : ''}` +
+                    (loan.durationMonths % 12 ? ` and ${loan.durationMonths % 12} month${loan.durationMonths % 12 !== 1 ? 's' : ''}` : '')}
                 </p>
 
                 {applyingLoanId === loan.id ? (

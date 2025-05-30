@@ -29,7 +29,7 @@ const RepaymentListGrouped = ({ userId, status = "" }) => {
 
         Object.keys(grouped).forEach(key => {
           grouped[key].sort(
-            (a, b) => new Date(b.repaymentDate) - new Date(a.repaymentDate)
+            (a, b) => new Date(a.repaymentDate) - new Date(b.repaymentDate)
           );
         });
 

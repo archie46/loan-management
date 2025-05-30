@@ -95,9 +95,10 @@ const ViewLoanRequests = ({ userId }) => {
 
                 <td className="px-4 py-3 whitespace-nowrap text-gray-600">{req.loanType}</td>
                 <td className={`px-4 py-3 whitespace-nowrap font-semibold ${
-                  req.status === "Approved" ? "text-green-600" :
-                  req.status === "Pending" ? "text-yellow-600" :
-                  req.status === "Rejected" ? "text-red-600" : "text-gray-600"
+                  req.status === "APPROVED" ? "text-green-600" :
+                  req.status === "PENDING" ? "text-yellow-600" :
+                  req.status === "REJECTED" ? "text-red-600" : 
+                      req.status === "DISBURSED" ? "text-orange-600" :"text-gray-600"
                 }`}>
                   {req.status}
                 </td>
