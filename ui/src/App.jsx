@@ -6,11 +6,14 @@ import UserDashboard from './pages/UserDashBoard';
 import ManagerDashboard from './pages/ManagerDashboard';
 import FinanceDashboard from './pages/FinanceDashboard';
 import LandingPage from "./pages/LandingPage.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
   return (
     <Router>
+        <ToastContainer></ToastContainer>
       <Routes>
           <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -20,6 +23,7 @@ function App() {
         <Route path="/finance/*" element={<FinanceDashboard />} />
       </Routes>
     </Router>
+
   );
 }
 

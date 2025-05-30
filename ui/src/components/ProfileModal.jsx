@@ -34,7 +34,7 @@ const ProfileModal = ({ data, onClose }) => {
                     <p><strong>Salary:</strong>{formatter.format(data.salary)}</p>
                     <p><strong>Bank Account:</strong> {data.bankAccountNumber}</p>
                     <p><strong>Account Balance:</strong> {formatter.format(data.accountBalance)}</p>
-                    <p><strong>Status:</strong> <span className={`font-semibold ${data.isActive ? 'text-green-500' : 'text-red-500'}`}>{data.isActive ? 'Active' : 'Inactive'}</span></p>
+                    <p><strong>Status:</strong> <span className={`font-semibold ${data.active ? 'text-green-500' : 'text-red-500'}`}>{data.active ? 'Active' : 'Inactive'}</span></p>
                     {/* Password is intentionally omitted for security */}
                 </div>
                 <div className="mt-6 flex justify-end">

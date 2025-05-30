@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getManagerLoanRequests, approveLoanRequest, rejectLoanRequest } from "../api/auth";
 import Navbar from "../components/Navbar";
+import {toast} from "react-toastify";
 
 function ManagerDashboard() {
   const [loanRequests, setLoanRequests] = useState([]);
@@ -16,6 +17,7 @@ function ManagerDashboard() {
   // Filter states
   const [filterStatus, setFilterStatus] = useState("");
   const [filterLoanType, setFilterLoanType] = useState("");
+  const [loanTypes, setLoanTypes] = useState([]);
 
   const managerId = localStorage.getItem("userId");
 
@@ -24,8 +26,10 @@ function ManagerDashboard() {
       setLoading(true);
       const response = await getManagerLoanRequests(managerId);
       setLoanRequests(response);
+      setLoanTypes(Array.from(new Set(response.map(item => item.loanType))));
       setLoading(false);
     } catch (err) {
+      console.log(err);
       setError("Failed to load loan requests.");
       setLoading(false);
     }
@@ -42,7 +46,7 @@ function ManagerDashboard() {
 
   const openModal = (request) => {
     setCurrentRequest(request);
-    setRemarks("");
+    setRemarks(request.managerRemarks);
     setApprovedAmount(request.requestedAmount);
     setModalOpen(true);
   };
@@ -55,12 +59,12 @@ function ManagerDashboard() {
   };
 
   const handleApprove = async () => {
-    if (!remarks.trim()) {
-      alert("Please enter remarks.");
+    if (!remarks || !remarks.trim()) {
+      toast.error("Please enter remarks.");
       return;
     }
-    if (!approvedAmount || isNaN(approvedAmount) || approvedAmount <= 0) {
-      alert("Please enter a valid approved amount.");
+    if (!approvedAmount || isNaN(approvedAmount) || approvedAmount <= 0 || approvedAmount > currentRequest.requestedAmount) {
+      toast.error("Please enter a valid approved amount.");
       return;
     }
 
@@ -74,15 +78,16 @@ function ManagerDashboard() {
     try {
       await approveLoanRequest(payload);
       closeModal();
-      fetchLoanRequests();
+      await fetchLoanRequests();
     } catch (err) {
-      alert("Failed to approve request. Please try again.");
+      toast.error("Failed to approve request. Please try again.");
+      console.log(err);
     }
   };
 
   const handleReject = async () => {
-    if (!remarks.trim()) {
-      alert("Please enter remarks.");
+    if (!remarks || !remarks.trim()) {
+      toast.error("Please enter remarks.");
       return;
     }
 
@@ -95,9 +100,10 @@ function ManagerDashboard() {
     try {
       await rejectLoanRequest(payload);
       closeModal();
-      fetchLoanRequests();
+      await fetchLoanRequests();
     } catch (err) {
-      alert("Failed to reject request. Please try again.");
+      console.log(err);
+      toast.error("Failed to reject request. Please try again.");
     }
   };
 
@@ -153,6 +159,7 @@ function ManagerDashboard() {
                   <option value="PENDING">Pending</option>
                   <option value="APPROVED">Approved</option>
                   <option value="REJECTED">Rejected</option>
+                  <option value="DISBURSED">Disbursed</option>
                 </select>
               </div>
 
@@ -170,10 +177,11 @@ function ManagerDashboard() {
                   className="w-40 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">All</option>
-                  <option value="PERSONAL">Personal</option>
-                  <option value="HOME">Home</option>
-                  <option value="CAR">Car</option>
-                  <option value="EDUCATION">Education</option>
+                  {loanTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                  ))}
                 </select>
               </div>
             </section>
@@ -251,7 +259,7 @@ function ManagerDashboard() {
 
         {modalOpen && currentRequest && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
@@ -289,6 +297,7 @@ function ManagerDashboard() {
                   onChange={(e) => setApprovedAmount(e.target.value)}
                   min="0"
                   aria-describedby="approvedAmountHelp"
+                  readOnly={currentRequest.status === 'DISBURSED'}
                 />
                 <small
                   id="approvedAmountHelp"
@@ -312,23 +321,28 @@ function ManagerDashboard() {
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
                   placeholder="Enter remarks here"
+                  readOnly={currentRequest.status === 'DISBURSED'}
                 />
               </div>
 
               <div className="flex justify-end gap-4">
-                <button
+                {currentRequest.status !== 'DISBURSED' && (<button
+
                   onClick={handleApprove}
                   className="px-5 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
                 >
                   Approve
-                </button>
+                </button>)}
+                {currentRequest.status !== 'DISBURSED' && (
+                    <button
+                        onClick={handleReject}
+                        className="px-5 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+                    >
+                      Reject
+                    </button>
+                )}
                 <button
-                  onClick={handleReject}
-                  className="px-5 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                >
-                  Reject
-                </button>
-                <button
+
                   onClick={closeModal}
                   className="px-5 py-2 rounded-md bg-gray-300 text-gray-800 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
                 >

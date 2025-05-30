@@ -226,20 +226,20 @@ function FinanceDashboard() {
                         {new Date(currentRequest.requestDate).toLocaleDateString()}
                       </div>
                       <div>
-                        <strong>Remarks:</strong>{" "}
-                        {currentRequest.remarks || (
+                        <strong>Manager's Remarks:</strong>{" "}
+                        {currentRequest.managerRemarks || (
                           <span className="italic text-gray-500">No remarks</span>
                         )}
                       </div>
                     </div>
 
                     <div className="flex justify-end gap-4">
-                      <button
+                      {currentRequest.status !== 'DISBURSED' && (<button
                         onClick={handleDisburse}
                         className="px-5 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
                       >
                         Disburse
-                      </button>
+                      </button>)}
                       <button
                         onClick={closeModal}
                         className="px-5 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
