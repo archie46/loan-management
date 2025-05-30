@@ -2,7 +2,6 @@ package com.company.loan_management.controller;
 
 import com.company.loan_management.dto.LoanRepaymentDTO;
 import com.company.loan_management.dto.ManagerLoanRequestDTO;
-import com.company.loan_management.dto.UserLoanRequestDTO;
 import com.company.loan_management.mapper.LoanRepaymentMapper;
 import com.company.loan_management.mapper.ManagerLoanRequestMapper;
 import com.company.loan_management.model.LoanRepayment;
@@ -10,7 +9,6 @@ import com.company.loan_management.model.LoanRequest;
 import com.company.loan_management.service.LoanRepaymentService;
 import com.company.loan_management.service.LoanRequestService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,6 @@ import java.util.List;
 @RequestMapping("/api/finance")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Finance Controller", description = "Finance department operations for disbursing loans and managing repayments.")
 public class FinanceController {
 
     private final LoanRepaymentService loanRepaymentService;
@@ -77,6 +74,15 @@ public class FinanceController {
         return ResponseEntity.ok("Repayment marked as PAID.");
     }
 
+    /**
+     * Retrieves all approved loan requests that are pending disbursal.
+     * Allows optional filtering by loan status.
+     *
+     * @param status Optional loan status to filter (e.g., APPROVED, DISBURSED)
+     * @return List of loan requests eligible for finance department action
+     */
+    @Operation(summary = "Get loan requests for disbursal",
+            description = "Fetches loan requests approved by the manager, optionally filtered by status, for disbursal by the finance department.")
     @GetMapping("/loanRequests")
     public ResponseEntity<List<ManagerLoanRequestDTO>> getLoanRequests(
             @RequestParam(required = false) String status) {
@@ -94,6 +100,16 @@ public class FinanceController {
                 .toList());
     }
 
+
+    /**
+     * Retrieves loan repayments for a specific user, with optional status filtering.
+     *
+     * @param userId ID of the user whose repayments are being queried
+     * @param status Optional repayment status (e.g., PENDING, PAID)
+     * @return List of loan repayment entries associated with the user
+     */
+    @Operation(summary = "Get loan repayments for user",
+            description = "Retrieves all loan repayments for a specific user ID. Can optionally filter by repayment status (e.g., PENDING, PAID).")
     @GetMapping("/loanRepayments")
     public ResponseEntity<List<LoanRepaymentDTO>> getLoanRepayments(@RequestParam(required = true) Long userId,
             @RequestParam(required = false) String status) {

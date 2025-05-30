@@ -15,8 +15,6 @@ import com.company.loan_management.exception.LoanNotFoundException;
 import com.company.loan_management.exception.UserNotFoundException;
 import com.company.loan_management.exception.InvalidLoanRequestException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -47,10 +45,6 @@ public class LoanRequestController {
      * User applies for a new loan.
      */
     @Operation(summary = "Apply for a loan", description = "User applies for a loan by providing Details.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Loan request created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request")
-    })
     @PostMapping("/apply")
     public ResponseEntity<UserLoanRequestDTO> applyForLoan(@RequestBody UserLoanRequestDTO loanRequestDto) {
         // Fetch the User and Loan objects using the username and loan type from the request
@@ -99,10 +93,6 @@ public class LoanRequestController {
      * User cancels a pending loan request.
      */
     @Operation(summary = "Cancel loan request", description = "User cancels their pending loan request.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Loan request canceled successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid or unauthorized cancellation")
-    })
     @PostMapping("/cancel")
     public ResponseEntity<UserLoanRequestDTO> cancelLoanRequest(@RequestParam Long requestId, @RequestParam String username) {
         Optional<User> userOpt = userService.findByUsername(username);
@@ -136,9 +126,6 @@ public class LoanRequestController {
      * The returned loan requests will contain only non-sensitive data like loan type, status, and amounts.
      */
     @Operation(summary = "View user's loan requests", description = "Fetch all loan requests made by the user, with optional filtering by status.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Loan requests fetched successfully")
-    })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserLoanRequestDTO>> getUserLoanRequests(
@@ -170,9 +157,6 @@ public class LoanRequestController {
      * Manager views assigned loan requests with optional status filtering.
      */
     @Operation(summary = "View manager's assigned loan requests", description = "Fetch all loan requests assigned to manager.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Assigned loan requests fetched successfully")
-    })
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/manager/{managerId}")
     public ResponseEntity<List<ManagerLoanRequestDTO>> getManagerLoanRequests(
@@ -193,10 +177,6 @@ public class LoanRequestController {
      * Manager approves a loan request.
      */
     @Operation(summary = "Approve loan request", description = "Manager approves a loan request assigned to them.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Loan request approved successfully"),
-            @ApiResponse(responseCode = "400", description = "Unauthorized or invalid operation")
-    })
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/manager/approve")
     public ResponseEntity<String> approveLoanRequest(
@@ -215,10 +195,6 @@ public class LoanRequestController {
      * Manager rejects a loan request.
      */
     @Operation(summary = "Reject loan request", description = "Manager rejects a loan request assigned to them.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Loan request rejected successfully"),
-            @ApiResponse(responseCode = "400", description = "Unauthorized or invalid operation")
-    })
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/manager/reject")
     public ResponseEntity<String> rejectLoanRequest(

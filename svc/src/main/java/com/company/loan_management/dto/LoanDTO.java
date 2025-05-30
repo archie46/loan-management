@@ -1,6 +1,5 @@
 package com.company.loan_management.dto;
 
-import com.company.loan_management.model.User;
 import lombok.*;
 
 /**

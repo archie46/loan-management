@@ -10,12 +10,9 @@ import com.company.loan_management.model.User;
 import com.company.loan_management.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -157,10 +154,6 @@ public class UserController {
      * @return User details if found, otherwise HTTP 404.
      */
     @Operation(summary = "Get My User Details", description = "Fetches the profile details of the currently logged-in user.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved user details"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
     @GetMapping("/me")
     public ResponseEntity<User> getMyDetails(Authentication authentication) {
         String username = authentication.getName(); // Get the username of the logged-in user

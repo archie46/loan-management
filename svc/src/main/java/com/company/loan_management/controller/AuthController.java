@@ -4,6 +4,7 @@ import com.company.loan_management.dto.LoginRequestDTO;
 import com.company.loan_management.dto.LoginResponseDTO;
 import com.company.loan_management.jwt.JwtUtil;
 import com.company.loan_management.service.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +37,7 @@ public class AuthController {
      * @return ResponseEntity with status and JWT token if authentication is successful, or error message.
      */
     @PostMapping("/login")
+    @Operation(summary = "Authenticate user and return JWT token", description = "Authenticates the user with provided credentials and returns a JWT token with user details.")
     public ResponseEntity<Object> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         logger.info("Attempting to authenticate user with username: {}", loginRequestDTO.getUsername());
 
