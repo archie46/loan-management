@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { getUsers, getLoans, deleteLoan, deleteUser } from "../api/auth";
 import AdminSideBar from "../components/AdminSideBar";
 import Navbar from "../components/Navbar";
@@ -15,7 +14,6 @@ function AdminDashBoard() {
   const [activeTab, setActiveTab] = useState(null);
   const [users, setUsers] = useState([]);
   const [loans, setLoans] = useState([]);
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);

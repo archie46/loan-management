@@ -4,6 +4,7 @@ import UserSidebar from "../components/UserSidebar";
 import ApplyLoanForm from "../components/ApplyLoanForm";
 import RepaymentList from "../components/RepaymentList";
 import ViewLoanRequests from "../components/ViewLoanRequests";
+import {toast} from "react-toastify";
 
 function UserDashboard() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -24,7 +25,7 @@ function UserDashboard() {
           {activeTab === "applyLoan" && (
             <section>
               <h2 className="text-2xl font-semibold text-gray-800 mb-6">Apply for a Loan</h2>
-              <ApplyLoanForm />
+              <ApplyLoanForm onSuccess={() => toast.success("Loan Applied Successfully!")} onClose={() => setActiveTab(null)}/>
             </section>
           )}
 

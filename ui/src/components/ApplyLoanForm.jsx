@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getLoans, applyForLoan } from "../api/auth";
 
-function LoanForm({ onClose, onSuccess }) {
+function ApplyLoanForm({ onSuccess }) {
   const [loanTypes, setLoanTypes] = useState([]);
   const [expandedLoanId, setExpandedLoanId] = useState(null);
   const [applyingLoanId, setApplyingLoanId] = useState(null);
@@ -148,19 +148,8 @@ function LoanForm({ onClose, onSuccess }) {
           </div>
         ))}
       </div>
-
-      {onClose && (
-        <div className="mt-8">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
-          >
-            Close
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
-export default LoanForm;
+export default ApplyLoanForm;

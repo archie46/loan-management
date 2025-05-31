@@ -128,6 +128,7 @@ function UserForm({ user, onClose, onSuccess }) {
           >
             <option value="USER">User</option>
             <option value="MANAGER">Manager</option>
+            <option value="FINANCE">Finance</option>
             <option value="ADMIN">Admin</option>
           </select>
         </div>

@@ -1,0 +1,9 @@
+---
+applications:
+  - name: loan-management
+    memory: 512M
+    buildpacks:
+      - staticfile_buildpack
+    routes:
+      - route: loan-management.cfapps.us10-001.hana.ondemand.com  # This is the route
+    path: ./dist
