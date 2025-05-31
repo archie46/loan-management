@@ -79,6 +79,7 @@ function ManagerDashboard() {
       await approveLoanRequest(payload);
       closeModal();
       await fetchLoanRequests();
+      toast.success("Loan Approved Successfully.");
     } catch (err) {
       toast.error("Failed to approve request. Please try again.");
       console.log(err);
@@ -101,6 +102,7 @@ function ManagerDashboard() {
       await rejectLoanRequest(payload);
       closeModal();
       await fetchLoanRequests();
+      toast.error("Loan Rejected.");
     } catch (err) {
       console.log(err);
       toast.error("Failed to reject request. Please try again.");

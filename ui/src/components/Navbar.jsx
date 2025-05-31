@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Menu, User, LogOut, Settings } from 'lucide-react'; // Added Settings for My Profile icon
 import { getMyProfile } from "../api/auth.jsx";
 import ProfileModal from "./ProfileModal.jsx";
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -14,6 +15,7 @@ const Navbar = ({ onToggleSidebar }) => {
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [profileData, setProfileData] = useState(null);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
 
     // Effect to close the dropdown when clicking outside
@@ -48,7 +50,7 @@ const Navbar = ({ onToggleSidebar }) => {
 
     const handleLogout = () => {
         localStorage.clear();
-        window.location.href = "/login";
+        navigate('/login');
     };
 
     const handleMyProfileClick = async () => {
