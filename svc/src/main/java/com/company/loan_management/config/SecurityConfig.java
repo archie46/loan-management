@@ -140,7 +140,7 @@ public class SecurityConfig {
     private static CorsConfigurationSource corsConfigurationSource() {
         var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000/","http://localhost:5173/"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000/","http://localhost:5173/","https://loan-management.cfapps.us10-001.hana.ondemand.com/"));
 
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
                 "Accept", "Authorization", "X-Requested-With",

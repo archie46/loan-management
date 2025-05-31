@@ -1,0 +1,14 @@
+---
+applications:
+  - name: loan-management-svc
+    path: target/loan-management-0.0.1-SNAPSHOT.jar
+    memory: 1G
+    routes:
+      - route: loan-management-svc.cfapps.us10-001.hana.ondemand.com
+    buildpacks:
+      - java_buildpack
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ memory_calculator: { stack_threads: 200 },jre: { version: 21.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{enabled: false}'
+      MALLOC_ARENA_MAX: 4
+      SPRING_PROFILES_ACTIVE: mysql
